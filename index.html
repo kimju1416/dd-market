@@ -191,6 +191,22 @@ tbody tr:last-child td{border-bottom:0}
 .taxcard .tc-r{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:5px 0; font-size:13px}
 .taxcard .tc-r span{color:var(--sub); flex:0 0 auto}
 .taxcard .tc-r b{text-align:right; font-variant-numeric:tabular-nums}
+/* ===== 바다 상태 띠 ===== */
+.beach{margin-top:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);
+  padding:13px 16px; display:flex; align-items:center; gap:8px 16px; flex-wrap:wrap}
+.beach .bt{display:flex; align-items:center; gap:8px; font-size:14.5px; font-weight:800; letter-spacing:-.01em; flex:0 0 auto}
+.beach .bi{display:flex; align-items:baseline; gap:6px; font-size:12.5px; color:var(--sub); font-weight:600; white-space:nowrap}
+.beach .bi b{font-size:17px; color:var(--ink); font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.beach .bi em{font-style:normal; font-size:11.5px; color:var(--dim); font-weight:600}
+.beach .bsep{width:1px; height:22px; background:var(--line-s); flex:0 0 auto}
+.beach .bn{margin-left:auto; font-size:11.5px; color:var(--dim); text-align:right; line-height:1.45}
+@media (max-width:760px){
+  .beach{padding:12px 13px; gap:9px 14px}
+  .beach .bsep{display:none}
+  .beach .bt{width:100%}
+  .beach .bn{margin-left:0; width:100%; text-align:left}
+}
+
 /* ===== 뉴스 목록 ===== */
 .newsitem{display:block; padding:11px 4px; border-bottom:1px solid var(--line-s); text-decoration:none; color:inherit}
 .newsitem:last-child{border-bottom:0}
@@ -257,6 +273,9 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
 </header>
 
 <main class="wrap">
+
+<!-- 오보해변 바다 상태 — 모든 탭 위에 고정으로 보인다 -->
+<div class="beach" id="beachBar"></div>
 
 <!-- ============ 시장현황 ============ -->
 <section class="panel" id="panel-market">
@@ -795,6 +814,7 @@ var STATE = {
   etfOn: {VOO:true, QQQ:true, SCHD:true, SOXX:true, MAGS:true},
   /* 확장 데이터 — 세계지수·종목·금리커브 / 경제뉴스 / 김치 프리미엄 */
   extra: null, extraDate: null, news: null, kimchi: null,
+  beach: null,
   sources: []
 };
 
@@ -1328,14 +1348,14 @@ function refresh(){
   /* 중계 API가 지수·ETF·원자재·코인을 한 번에 채운다.
      실패하면 브라우저가 직접 부를 수 있는 것만이라도 살린다. */
   loadProxy().catch(function(){ return false; }).then(function(proxyOk){
-    var jobs = [loadFx(), loadFng(), loadPlus()];
+    var jobs = [loadFx(), loadFng(), loadPlus(), loadBeach()];
     if(!proxyOk) jobs.push(loadCrypto(), loadCryptoSeries());
     return Promise.all(jobs.map(function(p){ return p.catch(function(){ return false; }); }))
       .then(function(res){ return {proxyOk:proxyOk, n:res.filter(Boolean).length + (proxyOk?1:0)}; });
   }).then(function(r){
     renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
     renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
-    renderPlus();
+    renderPlus(); renderBeach();
     var now = new Date();
     $("stampTime").textContent = dateStr(now)+" "+timeStr(now);
     $("stampSrc").textContent = r.n===0
@@ -1359,6 +1379,7 @@ function renderDataStatus(){
     '시세는 10분, 암호화폐는 5분 단위로 갱신됩니다.</p>'+
     '<p class="note">세계 지수 · 국내외 종목 · 국채 수익률 곡선도 같은 중계 서버를 거쳐 10분 단위로 갱신됩니다. '+
     '경제 헤드라인은 <b>구글 뉴스</b> 검색 결과를 15분 단위로, 김치 프리미엄은 <b>업비트</b> 원화 시세를 3분 단위로 받아옵니다.</p>'+
+    '<p class="note">맨 위 <b>오보해변</b> 띠(파고 · 바람 · 수온 · 기온)는 <b>Open-Meteo</b> 예보 모델값입니다. 브라우저가 직접 받아오고, 막히면 중계 서버로 한 번 더 시도합니다. 인근 해상 격자 기준이라 실제 해변과는 차이가 있을 수 있습니다.</p>'+
     '<p class="note">환율은 유럽중앙은행 고시(frankfurter), 투자심리 지수는 alternative.me에서 브라우저가 직접 받아옵니다. '+
     '중계 서버가 응답하지 않으면 내장 참고값('+SNAP_DATE+' 기준)으로 표시되며, 값마다 배지로 구분됩니다.</p>'+
     '<p class="note" style="color:var(--sub)">이 페이지는 학습·참고용입니다. 시세는 지연될 수 있으며, 실제 매매 판단에는 증권사 HTS·MTS의 정식 시세를 사용하세요.</p>';
@@ -1830,7 +1851,9 @@ var SOURCES = [
   ["e-나라지표","국가 주요 경제지표 모음","https://www.index.go.kr"],
   ["미국 재무부 금리 곡선","만기별 국채 수익률 공식 고시값","https://home.treasury.gov/resource-center/data-chart-center/interest-rates"],
   ["업비트","국내 암호화폐 원화 시세","https://upbit.com/exchange"],
-  ["구글 뉴스 · 경제","증시·금리·환율 기사 모아보기","https://news.google.com/search?q=%EC%A6%9D%EC%8B%9C&hl=ko&gl=KR&ceid=KR:ko"]
+  ["구글 뉴스 · 경제","증시·금리·환율 기사 모아보기","https://news.google.com/search?q=%EC%A6%9D%EC%8B%9C&hl=ko&gl=KR&ceid=KR:ko"],
+  ["기상청 해양기상","연안 파고·수온 관측과 예보","https://www.weather.go.kr/w/ocean/marine-obs/buoy.do"],
+  ["Open-Meteo","이 페이지의 파고·바람·수온 예보 모델","https://open-meteo.com"]
 ];
 /* 세금 — 어디에 투자하느냐에 따라 세금 구조가 통째로 달라진다.
    수치는 2026년 기준이며, 세법은 바뀌므로 큰 금액은 반드시 국세청·세무사에게 확인. */
@@ -2290,6 +2313,129 @@ function renderPlus(){
 }
 
 /* =======================================================================
+   9-c. 오보해변 바다 상태 — 파고 · 바람 · 수온
+        Open-Meteo(무료·키 없음·CORS 열림)를 브라우저가 직접 부르고,
+        막히면 중계 서버(?only=beach)로 한 번 더 시도한다.
+   ======================================================================= */
+var BEACH = {
+  name: "오보해변",
+  lat: 36.447, lon: 129.431,      /* 해변(바람·기온) */
+  mlat: 36.447, mlon: 129.45      /* 인근 해상(파고·수온) */
+};
+var MARINE_URL = "https://marine-api.open-meteo.com/v1/marine?latitude=" + BEACH.mlat +
+  "&longitude=" + BEACH.mlon +
+  "&current=wave_height,wave_period,wave_direction,sea_surface_temperature&timezone=Asia%2FSeoul";
+var WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=" + BEACH.lat +
+  "&longitude=" + BEACH.lon +
+  "&current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code" +
+  "&wind_speed_unit=ms&timezone=Asia%2FSeoul";
+
+var DIR16 = ["북","북북동","북동","동북동","동","동남동","남동","남남동",
+             "남","남남서","남서","서남서","서","서북서","북서","북북서"];
+function windDir(deg){
+  if(!isFinite(deg)) return "";
+  return DIR16[Math.round(((deg % 360) + 360) % 360 / 22.5) % 16];
+}
+function waveTone(h){
+  if(!isFinite(h)) return "";
+  if(h < 0.5) return "잔잔";
+  if(h < 1.0) return "약간 일렁임";
+  if(h < 1.5) return "다소 높음";
+  if(h < 2.5) return "높음";
+  return "매우 높음";
+}
+function windTone(v){
+  if(!isFinite(v)) return "";
+  if(v < 2) return "거의 없음";
+  if(v < 4) return "산들바람";
+  if(v < 7) return "다소 붊";
+  if(v < 11) return "강함";
+  return "매우 강함";
+}
+function skyText(code){
+  var m = {0:"맑음",1:"대체로 맑음",2:"구름 조금",3:"흐림",45:"안개",48:"안개",
+           51:"이슬비",53:"이슬비",55:"이슬비",61:"비",63:"비",65:"강한 비",
+           71:"눈",73:"눈",75:"많은 눈",77:"싸락눈",80:"소나기",81:"소나기",82:"강한 소나기",
+           85:"눈소나기",86:"눈소나기",95:"뇌우",96:"뇌우",99:"뇌우"};
+  return m[code] || "";
+}
+
+function renderBeach(){
+  var box = $("beachBar");
+  if(!box) return;
+  var b = STATE.beach;
+
+  if(!b || (!isFinite(b.wave) && !isFinite(b.sst) && !isFinite(b.wind))){
+    box.innerHTML =
+      '<div class="bt">🌊 '+BEACH.name+' <span class="badge">확인 중</span></div>'+
+      '<div class="bn">바다 상태를 불러오는 중입니다. 연결이 막혀 있으면 표시되지 않습니다.</div>';
+    return;
+  }
+
+  var item = function(label, value, unit, sub){
+    if(value == null) return "";
+    return '<div class="bi"><span>'+label+'</span><b>'+value+
+           (unit ? '<span style="font-size:12px;font-weight:700;color:var(--sub)">'+unit+'</span>' : '')+'</b>'+
+           (sub ? '<em>'+sub+'</em>' : '')+'</div>';
+  };
+  var sep = '<div class="bsep"></div>';
+
+  var parts = [];
+  if(isFinite(b.wave)) parts.push(item("파고", nf(b.wave,1), "m", waveTone(b.wave)));
+  if(isFinite(b.wind)) parts.push(item("바람", windDir(b.windDir)+" "+nf(b.wind,1), "m/s",
+    (isFinite(b.gust) && b.gust > b.wind ? "돌풍 "+nf(b.gust,1)+"m/s" : windTone(b.wind))));
+  if(isFinite(b.sst))  parts.push(item("수온", nf(b.sst,1), "℃", ""));
+  if(isFinite(b.air))  parts.push(item("기온", nf(b.air,1), "℃", skyText(b.code)));
+  if(isFinite(b.period)) parts.push(item("주기", nf(b.period,1), "초", ""));
+
+  box.innerHTML =
+    '<div class="bt">🌊 '+BEACH.name+' <span class="badge'+(b.live?" live":"")+'">'+(b.live?"실시간":"참고값")+'</span></div>'+
+    parts.join(sep)+
+    '<div class="bn">'+(b.at ? b.at.replace("T"," ")+" 기준 · " : "")+
+    '예보 모델값(인근 해상 격자)이라 실제 해변과 차이가 있을 수 있습니다</div>';
+}
+
+function applyBeach_(marine, weather){
+  var b = STATE.beach || {live:true};
+  if(marine && marine.current){
+    var c = marine.current;
+    if(isFinite(c.wave_height))             b.wave = c.wave_height;
+    if(isFinite(c.wave_period))             b.period = c.wave_period;
+    if(isFinite(c.wave_direction))          b.waveDir = c.wave_direction;
+    if(isFinite(c.sea_surface_temperature)) b.sst = c.sea_surface_temperature;
+    if(c.time) b.at = c.time;
+  }
+  if(weather && weather.current){
+    var w = weather.current;
+    if(isFinite(w.wind_speed_10m))     b.wind = w.wind_speed_10m;
+    if(isFinite(w.wind_direction_10m)) b.windDir = w.wind_direction_10m;
+    if(isFinite(w.wind_gusts_10m))     b.gust = w.wind_gusts_10m;
+    if(isFinite(w.temperature_2m))     b.air = w.temperature_2m;
+    if(isFinite(w.weather_code))       b.code = w.weather_code;
+    if(w.time && !b.at) b.at = w.time;
+  }
+  b.live = true;
+  STATE.beach = b;
+  return isFinite(b.wave) || isFinite(b.sst) || isFinite(b.wind);
+}
+
+function loadBeach(){
+  return Promise.all([grab(MARINE_URL, 9000), grab(WEATHER_URL, 9000)]).then(function(r){
+    var ok = applyBeach_(r[0], r[1]);
+    /* 브라우저가 막힌 항목이 있으면 중계 서버로 한 번 더 */
+    if((!r[0] || !r[1]) && PROXY && PROXY.indexOf("http")===0){
+      return grab(PROXY+"?v=2&only=beach", 20000).then(function(j){
+        if(j && j.ok && j.beach) ok = applyBeach_(j.beach.marine, j.beach.weather) || ok;
+        if(ok) STATE.sources.push(BEACH.name+" 바다 상태: Open-Meteo" + ((!r[0]||!r[1]) ? " (중계)" : ""));
+        return ok;
+      });
+    }
+    if(ok) STATE.sources.push(BEACH.name+" 바다 상태: Open-Meteo");
+    return ok;
+  }).catch(function(){ return false; });
+}
+
+/* =======================================================================
    10. 이벤트 · 초기화
    ======================================================================= */
 function bindTabs(){
@@ -2334,7 +2480,7 @@ function init(){
   bindTabs();
   renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
   renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
-  renderPlus();
+  renderPlus(); renderBeach();
   renderLearn();
   bindSeg("txMode", function(b){ txMode = b.dataset.m; renderTxForm(); });
   renderTxForm();

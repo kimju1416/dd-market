@@ -46,12 +46,14 @@ function doGet(e) {
   var out = {ok:true, ts:new Date().toISOString(), source:'yahoo-finance'};
 
   try {
-    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'diag') {
+    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'beach' || only === 'diag' || only === 'diagnews') {
       /* 확장 데이터 — 기존 core 응답과 완전히 분리해 둔다(옛 화면에 영향 없음) */
       if (only === 'plus' || only === 'extra')  out.extra  = fetchExtra_();
       if (only === 'plus' || only === 'news')   out.news   = fetchNews_();
       if (only === 'plus' || only === 'kimchi') out.kimchi = fetchKimchi_();
+      if (only === 'beach') out.beach = fetchBeach_();
       if (only === 'diag') out.diag = diagSyms_();
+      if (only === 'diagnews') out.diagnews = diagNews_();
     } else {
       var all = fetchAllQuotes_();          // 캐시된 한 벌
       if (only === 'all' || only === 'quotes') out.quotes = all.quotes;
@@ -339,7 +341,7 @@ var FEEDS = [
 
 function fetchNews_() {
   var c = CacheService.getScriptCache();
-  var hit = c.get('n_v1');
+  var hit = c.get('n_v3');
   if (hit) { try { return JSON.parse(hit); } catch (e) {} }
 
   var reqs = FEEDS.map(function (f) {
@@ -358,7 +360,7 @@ function fetchNews_() {
     groups.push({key:FEEDS[i].k, label:FEEDS[i].label, items:parseRss_(res[i], 8)});
   }
   var out = {groups:groups};
-  putCache_(c, 'n_v1', out, CACHE_X.news);
+  putCache_(c, 'n_v3', out, CACHE_X.news);
   return out;
 }
 
@@ -383,20 +385,25 @@ function parseRss_(resp, limit) {
       var pub   = it.getChildText('pubDate') || '';
       var srcEl = it.getChild('source');
       var src   = srcEl ? srcEl.getText() : '';
-      /* 구글 뉴스 제목은 "제목 - 언론사" 꼴이라 뒤쪽 언론사를 떼어 낸다 */
-      if (src && title.length > src.length + 3 &&
-          title.slice(-(src.length + 3)) === ' - ' + src) {
-        title = title.slice(0, title.length - src.length - 3);
-      } else {
-        /* source 표기(영문 사명 등)와 제목 꼬리가 다를 때 — 마지막 " - 언론사"를 떼어 낸다 */
-        var cut = title.lastIndexOf(' - ');
-        if (cut > 10 && title.length - cut - 3 <= 25) {
-          var tail = title.slice(cut + 3);
-          if (tail.indexOf('.') < 0 && tail.indexOf('?') < 0 && tail.indexOf('!') < 0) {
-            if (!src) src = tail;
-            title = title.slice(0, cut);
+      /* 구글 뉴스 제목은 "제목 - 언론사" 꼴인데, 언론사명이 두 번 붙어 오는 경우가 있다
+         (실측: "...[부꾸미] - 머니투데이 - 머니투데이"). 그래서 붙은 만큼 반복해서 떼어 낸다. */
+      for (var k = 0; k < 3; k++) {
+        var before = title;
+        if (src && title.length > src.length + 3 &&
+            title.slice(-(src.length + 3)) === ' - ' + src) {
+          title = title.slice(0, title.length - src.length - 3);
+        } else {
+          /* source 표기(영문 사명 등)와 제목 꼬리가 다를 때 — 마지막 " - 언론사"를 떼어 낸다 */
+          var cut = title.lastIndexOf(' - ');
+          if (cut > 10 && title.length - cut - 3 <= 25) {
+            var tail = title.slice(cut + 3);
+            if (tail.indexOf('.') < 0 && tail.indexOf('?') < 0 && tail.indexOf('!') < 0) {
+              if (!src) src = tail;
+              title = title.slice(0, cut);
+            }
           }
         }
+        if (title === before) break;
       }
       if (!title || !link) continue;
       var at = null;
@@ -473,7 +480,7 @@ function fetchKimchi_() {
 
 /** 편집기에서 눌러 확장 데이터 확인용 */
 function testPlus() {
-  CacheService.getScriptCache().removeAll(['x_v1', 'n_v1', 'k_v1']);
+  CacheService.getScriptCache().removeAll(['x_v1', 'n_v3', 'k_v1']);
   var x = fetchExtra_();
   var miss = Object.keys(SYM_X).filter(function (k) { return !x.quotes[k]; });
   Logger.log('extra ' + x.count + '종 / 빠진 것: ' + (miss.length ? miss.join(',') : '없음'));
@@ -496,4 +503,67 @@ function diagSyms_() {
       return {sym:sym, code:-1, head:String(e).slice(0, 160)};
     }
   });
+}
+
+/* 진단 — 뉴스 제목에서 언론사 꼬리가 왜 안 떨어지는지 본다 */
+function diagNews_() {
+  var url = 'https://news.google.com/rss/search?q=' + encodeURIComponent('코스피') + '&hl=ko&gl=KR&ceid=KR%3Ako';
+  var r = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA});
+  var root = XmlService.parse(r.getContentText()).getRootElement();
+  var ch = root.getChild('channel');
+  var it = ch.getChildren('item')[0];
+  var title = it.getChildText('title') || '';
+  var srcEl = it.getChild('source');
+  var src = srcEl ? srcEl.getText() : '';
+  return {
+    code: r.getResponseCode(),
+    title: title,
+    src: src,
+    typeTitle: typeof title,
+    typeSrc: typeof src,
+    lenTitle: title.length,
+    lenSrc: src.length,
+    tail: title.slice(-(src.length + 3)),
+    eq: title.slice(-(src.length + 3)) === ' - ' + src,
+    lastIdx: title.lastIndexOf(' - ')
+  };
+}
+
+/* ---------------- 오보해변 바다 상태(파고·바람·수온) ----------------
+   브라우저가 Open-Meteo 를 직접 부르는 게 기본이고, 이 경로는 망이 막혔을 때의 대비책이다. */
+var BEACH_PT = {lat:36.447, lon:129.431, mlat:36.447, mlon:129.45};
+
+function fetchBeach_() {
+  var c = CacheService.getScriptCache();
+  var hit = c.get('b_v1');
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+
+  var urls = [
+    'https://marine-api.open-meteo.com/v1/marine?latitude=' + BEACH_PT.mlat +
+      '&longitude=' + BEACH_PT.mlon +
+      '&current=wave_height,wave_period,wave_direction,sea_surface_temperature&timezone=Asia%2FSeoul',
+    'https://api.open-meteo.com/v1/forecast?latitude=' + BEACH_PT.lat +
+      '&longitude=' + BEACH_PT.lon +
+      '&current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code' +
+      '&wind_speed_unit=ms&timezone=Asia%2FSeoul'
+  ];
+  var reqs = urls.map(function (u) {
+    return {url:u, muteHttpExceptions:true, followRedirects:true, headers:UA};
+  });
+
+  var res;
+  try { res = UrlFetchApp.fetchAll(reqs); } catch (e) { res = []; }
+
+  var pick = function (r) {
+    if (!r) return null;
+    try {
+      if (r.getResponseCode() !== 200) return null;
+      var j = JSON.parse(r.getContentText());
+      return j && j.current ? {current:j.current} : null;
+    } catch (e) { return null; }
+  };
+
+  var out = {marine:pick(res[0]), weather:pick(res[1])};
+  putCache_(c, 'b_v1', out, (out.marine || out.weather) ? 600 : 120);
+  return out;
 }
