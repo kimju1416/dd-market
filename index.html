@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>DD 오늘의 투자시황 | 경제·주식 한눈에 보기</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2316161a'/%3E%3Cpath d='M6 21l6-7 5 4 9-11' fill='none' stroke='%23d9f26b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="description" content="주요 지수·세계증시·국내외 종목·환율·원자재·암호화폐·국채금리·경제뉴스를 실시간으로 확인하고, 대출이자·복리·예적금·세금을 직접 계산해 보세요.">
+
+<!-- 공유 카드 (카카오톡 · 페이스북 · X 등) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DD 오늘의 투자시황">
+<meta property="og:title" content="DD 오늘의 투자시황">
+<meta property="og:description" content="세계증시 · 국내외 종목 · 환율 · 원자재 · 코인 · 국채금리 · 경제뉴스를 한 화면에서. 대출이자 · 복리 · 예적금 · 세금 계산기까지.">
+<meta property="og:url" content="https://kimju1416.github.io/dd-market/">
+<meta property="og:image" content="https://kimju1416.github.io/dd-market/og.png">
+<meta property="og:image:secure_url" content="https://kimju1416.github.io/dd-market/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="DD 오늘의 투자시황 — 실시간 시세 대시보드">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DD 오늘의 투자시황">
+<meta name="twitter:description" content="세계증시 · 국내외 종목 · 환율 · 코인 · 국채금리 · 경제뉴스를 한 화면에서.">
+<meta name="twitter:image" content="https://kimju1416.github.io/dd-market/og.png">
+<meta name="theme-color" content="#f4f4f1">
+<link rel="canonical" href="https://kimju1416.github.io/dd-market/">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --bg:#f4f4f1; --card:#ffffff; --line:#e7e7e2; --line-s:#f0f0ec;
+  --ink:#16161a; --sub:#6d6d74; --dim:#9a9aa1;
+  --lime:#d9f26b; --lime-d:#c2e04a; --lime-soft:#f3fbd4;
+  --up:#d92d20; --down:#1f5fd0; --flat:#6d6d74;
+  --shadow:0 1px 2px rgba(20,20,24,.04);
+  --r:14px;
+}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Malgun Gothic","맑은 고딕",sans-serif;
+  font-size:15px; line-height:1.5; word-break:keep-all; -webkit-text-size-adjust:100%;
+}
+a{color:inherit}
+button{font-family:inherit; cursor:pointer}
+.wrap{max-width:1180px; margin:0 auto; padding:0 18px 64px}
+
+/* ===== 헤더 ===== */
+.top{position:sticky; top:0; z-index:40; background:rgba(244,244,241,.93); backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+.top-in{max-width:1180px; margin:0 auto; padding:14px 18px 0; display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; justify-content:space-between}
+.brand h1{margin:0; font-size:26px; font-weight:800; letter-spacing:-.02em; line-height:1.25}
+/* 형광펜으로 그은 듯한 강조 — 글자 아래 절반만 라임이 깔린다 */
+.brand h1 mark{background:linear-gradient(transparent 52%, var(--lime) 52%); color:var(--ink); padding:0 3px; border-radius:2px}
+.brand p{margin:5px 0 0; font-size:13px; color:var(--sub)}
+.top-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.stamp{font-size:12px; color:var(--sub); text-align:right; line-height:1.35}
+.stamp b{color:var(--ink); font-weight:700}
+.btn-refresh{border:1px solid var(--line); background:var(--card); border-radius:999px; padding:8px 14px; font-size:13px; font-weight:600; display:inline-flex; align-items:center; gap:6px}
+.btn-refresh:hover{border-color:#d4d4cd}
+.btn-refresh[data-busy="1"]{opacity:.55; pointer-events:none}
+.spin{display:inline-block; width:12px; height:12px; border:2px solid var(--line); border-top-color:var(--ink); border-radius:50%; animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+nav.tabs{max-width:1180px; margin:0 auto; padding:12px 18px 0; display:flex; gap:4px; overflow-x:auto; scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{border:0; background:transparent; padding:9px 15px; font-size:14.5px; font-weight:600; color:var(--sub); white-space:nowrap; border-bottom:2px solid transparent}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--ink)}
+
+/* ===== 공통 카드 ===== */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow)}
+.card-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:16px 18px 0; flex-wrap:wrap}
+.card-h h2{margin:0; font-size:16px; font-weight:700; letter-spacing:-.01em; flex:0 0 auto}
+.card-h .hint{font-size:12px; color:var(--dim); min-width:0; text-align:right}
+.card-b{padding:14px 18px 18px}
+.sec{margin-top:22px}
+.sec-title{display:flex; align-items:baseline; gap:10px; margin:0 0 10px; font-size:17px; font-weight:800; letter-spacing:-.01em; flex-wrap:wrap}
+.sec-title span{font-size:12.5px; font-weight:500; color:var(--sub)}
+.grid{display:grid; gap:12px}
+.g5{grid-template-columns:repeat(5,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.split{display:grid; grid-template-columns:1.55fr 1fr; gap:12px; align-items:start}
+.split-r{display:grid; grid-template-columns:300px 1fr; gap:12px; align-items:start}
+
+/* ===== 배지 ===== */
+.badge{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; border:1px solid var(--line); color:var(--sub); background:#fafaf7; white-space:nowrap}
+.badge.live{background:var(--lime-soft); border-color:#e2f0ad; color:#4d6b00}
+.badge.live::before{content:""; width:6px; height:6px; border-radius:50%; background:#7ea800}
+.badge.warn{background:#fff5e9; border-color:#f6e0c2; color:#96601a}
+
+/* ===== 지수 카드 ===== */
+.quote{padding:15px 16px}
+.quote .nm{display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13px; color:var(--sub); font-weight:600}
+.quote .nm b{color:var(--ink); font-weight:700; font-size:13.5px}
+.quote .val{margin-top:9px; font-size:25px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.quote .prev{margin-top:3px; font-size:12px; color:var(--dim)}
+.quote .chg{margin-top:6px; font-size:13.5px; font-weight:700; font-variant-numeric:tabular-nums}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--flat)}
+
+/* ===== 미니 시세 타일 ===== */
+.tile{padding:13px 14px; border:1px solid var(--line-s); border-radius:12px; background:#fcfcfa}
+.tile .t1{font-size:12px; color:var(--sub); font-weight:600; display:flex; justify-content:space-between; gap:6px}
+.tile .t2{margin-top:6px; font-size:19px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.tile .t3{margin-top:3px; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums}
+.tile .t4{margin-top:2px; font-size:11px; color:var(--dim)}
+.tile .t5{margin-top:8px; padding-top:7px; border-top:1px dashed #e2e2db; font-size:12px; color:var(--sub); font-weight:600}
+.tile .t5 b{color:var(--ink); font-weight:800}
+
+/* ===== 게이지 ===== */
+.gauge-num{font-size:40px; font-weight:800; letter-spacing:-.03em; line-height:1}
+.gauge-lb{font-size:13px; font-weight:700; color:var(--sub); margin-top:2px}
+.gbar{position:relative; height:10px; border-radius:999px; margin:18px 0 6px;
+  background:linear-gradient(90deg,#ea6a63 0%,#f0a35f 25%,#e8d76a 50%,#a9d165 75%,#5fae4e 100%)}
+.gpin{position:absolute; top:50%; left:50%; width:16px; height:16px; border-radius:50%; background:#fff; border:3px solid var(--ink); transform:translate(-50%,-50%); transition:left .5s cubic-bezier(.2,.8,.2,1)}
+.gscale{display:flex; justify-content:space-between; font-size:11px; color:var(--dim)}
+.ghist{display:flex; gap:6px; margin-top:14px; flex-wrap:wrap}
+.ghist div{flex:1 1 68px; border:1px solid var(--line-s); border-radius:10px; padding:8px 4px; text-align:center; background:#fcfcfa}
+.ghist span{display:block; font-size:11px; color:var(--dim)}
+.ghist b{font-size:16px; font-variant-numeric:tabular-nums}
+
+/* ===== 표 ===== */
+table{width:100%; border-collapse:collapse; font-size:13.5px}
+th,td{padding:11px 10px; text-align:right; border-bottom:1px solid var(--line-s); font-variant-numeric:tabular-nums; white-space:nowrap}
+th{font-size:12px; color:var(--sub); font-weight:600; border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+.tb-scroll{overflow-x:auto}
+.tb-cap{max-height:280px; overflow-y:auto}
+.tb-cap thead th{position:sticky; top:0; background:var(--card); z-index:2}
+.dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:7px; vertical-align:middle}
+
+/* ===== 칩/토글 ===== */
+.chips{display:flex; gap:6px; flex-wrap:wrap}
+.chip{border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 13px; font-size:12.5px; font-weight:600; color:var(--sub)}
+.chip[aria-pressed="true"]{background:#fff; border-color:#c8c8c0; color:var(--ink); box-shadow:inset 0 0 0 1px #c8c8c0}
+.chip[aria-pressed="false"]{opacity:.5}
+.chip[aria-pressed="false"] .dot{filter:grayscale(1)}
+.seg{display:inline-flex; background:#f2f2ee; border-radius:10px; padding:3px; gap:2px; flex-wrap:wrap}
+.seg button{border:0; background:transparent; border-radius:8px; padding:7px 14px; font-size:13px; font-weight:700; color:var(--sub)}
+.seg button[aria-pressed="true"]{background:var(--card); color:var(--ink); box-shadow:var(--shadow)}
+
+/* ===== 폼 ===== */
+.field{margin-bottom:13px; min-width:0}
+.field label{display:block; font-size:12.5px; color:var(--sub); font-weight:600; margin-bottom:6px}
+.inp{display:flex; align-items:center; gap:8px; min-width:0; border:1px solid var(--line); border-radius:11px; padding:11px 13px; background:#fff}
+.inp:focus-within{border-color:#c9c9c0; box-shadow:0 0 0 3px #eff3dc}
+.inp input{flex:1; min-width:0; border:0; outline:0; font-family:inherit; font-size:15.5px; font-weight:700; text-align:right; background:transparent; color:var(--ink); font-variant-numeric:tabular-nums}
+.inp span{font-size:12.5px; color:var(--dim); font-weight:600}
+.btn-main{width:100%; border:0; background:var(--lime); color:#1e2600; border-radius:11px; padding:13px; font-size:15px; font-weight:800}
+.btn-main:hover{background:var(--lime-d)}
+.btn-ghost{width:100%; border:1px solid var(--line); background:#fff; border-radius:11px; padding:11px; font-size:13.5px; font-weight:600; color:var(--sub)}
+.kpi{padding:15px 17px; border:1px solid var(--line); border-radius:var(--r); background:var(--card)}
+.kpi.dark{background:var(--ink); border-color:var(--ink); color:#fff}
+.kpi .k1{font-size:12.5px; color:var(--sub); font-weight:600}
+.kpi.dark .k1{color:#b9b9c0}
+.kpi .k2{margin-top:7px; font-size:23px; font-weight:800; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.radios{display:grid; gap:7px}
+.radios label{display:flex; align-items:center; justify-content:space-between; gap:8px; border:1px solid var(--line); border-radius:11px; padding:11px 13px; font-size:13.5px; font-weight:600; cursor:pointer}
+.radios label.on{border-color:var(--lime-d); background:var(--lime-soft)}
+.radios input{accent-color:#7ea800; margin-right:8px}
+.radios em{font-style:normal; font-size:11.5px; color:var(--dim); font-weight:500}
+.mixbar{display:flex; height:9px; border-radius:999px; overflow:hidden; margin-bottom:9px}
+.rowline{display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-bottom:1px solid var(--line-s); font-size:13.5px}
+.rowline:last-child{border-bottom:0}
+.rowline b{font-variant-numeric:tabular-nums}
+
+/* ===== 링크/용어 ===== */
+.linkrow{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 4px; border-bottom:1px solid var(--line-s)}
+.linkrow:last-child{border-bottom:0}
+.linkrow .lt{font-size:14px; font-weight:700}
+.linkrow .ld{font-size:12.5px; color:var(--sub); margin-top:2px}
+.linkrow a{font-size:12.5px; font-weight:700; color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:6px 12px; white-space:nowrap}
+.linkrow a:hover{background:#fafaf7}
+.note{font-size:12px; color:var(--dim); margin-top:10px; line-height:1.6}
+.glossary details{border-bottom:1px solid var(--line-s)}
+.glossary details:last-child{border-bottom:0}
+.glossary summary{padding:13px 4px; font-size:14px; font-weight:700; cursor:pointer; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:10px}
+.glossary summary::-webkit-details-marker{display:none}
+.glossary summary::after{content:"+"; color:var(--dim); font-weight:600}
+.glossary details[open] summary::after{content:"−"}
+.glossary p{margin:0 4px 14px; font-size:13.5px; color:var(--sub); line-height:1.65}
+.panel[hidden]{display:none}
+.dim{color:var(--dim); font-weight:500; font-size:12px}
+.taxcards{display:grid; gap:8px}
+.taxcard{border:1px solid var(--line-s); border-radius:12px; padding:12px 14px; background:#fcfcfa}
+.taxcard .tc-h{font-size:14px; font-weight:800; margin-bottom:8px}
+.taxcard .tc-r{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:5px 0; font-size:13px}
+.taxcard .tc-r span{color:var(--sub); flex:0 0 auto}
+.taxcard .tc-r b{text-align:right; font-variant-numeric:tabular-nums}
+/* ===== 뉴스 목록 ===== */
+.newsitem{display:block; padding:11px 4px; border-bottom:1px solid var(--line-s); text-decoration:none; color:inherit}
+.newsitem:last-child{border-bottom:0}
+.newsitem .nt{font-size:13.5px; font-weight:700; line-height:1.5}
+.newsitem .nm2{margin-top:4px; font-size:11.5px; color:var(--dim); display:flex; gap:10px; flex-wrap:wrap}
+.newsitem:hover .nt{text-decoration:underline}
+.newsitem:focus-visible{outline:2px solid var(--lime-d); outline-offset:2px; border-radius:8px}
+
+/* 가로 스크롤 방어: 페이지는 절대 옆으로 밀리지 않는다 */
+html,body{max-width:100%; overflow-x:clip}
+.wrap,.top-in,nav.tabs,.card,.card-b,.grid,.split,.split-r,.sec{min-width:0}
+.card-b>table{width:100%}
+img,svg,table{max-width:100%}
+svg .axis{stroke:#ecece7; stroke-width:1}
+svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
+
+@media (max-width:1000px){
+  .split{grid-template-columns:1fr}
+  .split-r{grid-template-columns:1fr}
+  .g5{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:620px){
+  .wrap{padding:0 12px 48px}
+  .top-in{padding:12px 12px 0}
+  nav.tabs{padding:10px 12px 0}
+  .brand h1{font-size:21px}
+  .g5,.g4,.g3,.g2{grid-template-columns:1fr}
+  /* 시세는 한눈에 훑도록 2열 유지 */
+  #idxGrid,#fxGrid,#assetGrid,#kimchiGrid,#asiaGrid,#euroGrid{grid-template-columns:1fr 1fr; gap:8px}
+  #idxGrid .quote,#asiaGrid .quote,#euroGrid .quote{padding:12px 12px}
+  #idxGrid .quote .val,#asiaGrid .quote .val,#euroGrid .quote .val{font-size:19px}
+  #idxGrid .quote .chg,#idxGrid .quote .nm b,#asiaGrid .quote .chg,#asiaGrid .quote .nm b,#euroGrid .quote .chg,#euroGrid .quote .nm b{font-size:12px}
+  #idxGrid .quote .nm span,#idxGrid .quote .prev,#asiaGrid .quote .nm span,#asiaGrid .quote .prev,#euroGrid .quote .nm span,#euroGrid .quote .prev{font-size:11px}
+  .tile .t2{font-size:17px}
+  .quote .val{font-size:22px}
+  .stamp{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1><mark>DD</mark> 오늘의 투자시황</h1>
+      <p>세계증시 · 종목 · 환율 · 원자재 · 코인 · 국채금리 · 경제뉴스를 한 화면에서</p>
+    </div>
+    <div class="top-right">
+      <div class="stamp">마지막 갱신 <b id="stampTime">—</b><br><span id="stampSrc">불러오는 중…</span></div>
+      <button class="btn-refresh" id="btnRefresh" type="button"><span id="refIcon">↻</span> 새로고침</button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" data-tab="market" aria-selected="true">시장현황</button>
+    <button class="tab" role="tab" data-tab="world" aria-selected="false">세계·종목</button>
+    <button class="tab" role="tab" data-tab="etf" aria-selected="false">ETF 비교</button>
+    <button class="tab" role="tab" data-tab="news" aria-selected="false">뉴스</button>
+    <button class="tab" role="tab" data-tab="loan" aria-selected="false">대출이자 계산</button>
+    <button class="tab" role="tab" data-tab="compound" aria-selected="false">복리 계산</button>
+    <button class="tab" role="tab" data-tab="life" aria-selected="false">환율·예적금</button>
+    <button class="tab" role="tab" data-tab="learn" aria-selected="false">용어·자료</button>
+  </nav>
+</header>
+
+<main class="wrap">
+
+<!-- ============ 시장현황 ============ -->
+<section class="panel" id="panel-market">
+
+  <div class="sec" style="margin-top:18px">
+    <h2 class="sec-title">해외 지수 <span id="idxAsOf">미국 증시 마감 기준</span></h2>
+    <div class="grid g4" id="idxGrid"></div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-title">국내 · 아시아 <span>코스피 · 코스닥은 종가 기준으로 갱신됩니다</span></h2>
+    <div class="grid g4" id="domGrid"></div>
+  </div>
+
+  <div class="sec split">
+    <div class="card">
+      <div class="card-h">
+        <h2 id="flowTitle">글로벌 흐름</h2>
+        <div class="seg" id="flowSeg">
+          <button type="button" data-flow="rate" aria-pressed="true">금리</button>
+          <button type="button" data-flow="fx" aria-pressed="false">환율</button>
+          <button type="button" data-flow="crypto" aria-pressed="false">코인</button>
+        </div>
+      </div>
+      <div class="card-b">
+        <div id="flowHead" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px"></div>
+        <div id="flowChart"></div>
+        <p class="note" id="flowNote"></p>
+      </div>
+    </div>
+
+    <div style="display:grid; gap:12px">
+      <div class="card">
+        <div class="card-h">
+          <h2>투자심리 지수</h2>
+          <span class="badge" id="fngBadge">확인 중</span>
+        </div>
+        <div class="card-b">
+          <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:10px">
+            <div>
+              <div class="gauge-num" id="fngVal">—</div>
+              <div class="gauge-lb" id="fngLabel">불러오는 중</div>
+            </div>
+            <div style="text-align:right; font-size:12px; color:var(--dim); line-height:1.5" id="fngAsOf"></div>
+          </div>
+          <div class="gbar"><div class="gpin" id="fngPin"></div></div>
+          <div class="gscale"><span>0 공포</span><span>50</span><span>탐욕 100</span></div>
+          <div class="ghist" id="fngHist"></div>
+          <p class="note">0에 가까울수록 시장이 겁먹은 상태, 100에 가까울수록 과열입니다. 값 자체가 매수·매도 신호는 아닙니다.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>금리 · 달러</h2><span class="hint">기준금리는 공시값 · 아래는 실시간</span></div>
+        <div class="card-b" id="policyBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-title">환율 <span id="fxAsOf"></span></h2>
+    <div class="grid g4" id="fxGrid"></div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-title">원자재 · 암호화폐 <span id="assetAsOf"></span></h2>
+    <div class="grid g4" id="assetGrid"></div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-title">김치 프리미엄 <span id="kimchiAsOf">업비트 원화가 vs 해외 시세</span></h2>
+    <div class="grid g5" id="kimchiGrid"></div>
+    <p class="note">국내 거래소 가격이 해외 시세(달러가 × 환율)보다 얼마나 비싼지를 나타냅니다.
+    플러스면 국내가 더 비싼 상태(김치 프리미엄), 마이너스면 더 싼 상태(역프리미엄)입니다.
+    국내외 송금이 자유롭지 않아 생기는 차이라, 이 값만 보고 차익거래를 시도하면 송금 규제·수수료·시차로 손실이 날 수 있습니다.</p>
+  </div>
+
+</section>
+
+<!-- ============ 세계 · 종목 ============ -->
+<section class="panel" id="panel-world" hidden>
+
+  <div class="sec" style="margin-top:18px">
+    <h2 class="sec-title">아시아 증시 <span id="worldAsOf">중계 서버 연결 대기</span></h2>
+    <div class="grid g4" id="asiaGrid"></div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-title">유럽 증시 <span>현지 종가 기준 · 유럽 시장은 한국시간 밤에 마감합니다</span></h2>
+    <div class="grid g4" id="euroGrid"></div>
+  </div>
+
+  <div class="sec split">
+    <div class="card">
+      <div class="card-h"><h2>미국 국채 수익률 곡선</h2><span class="hint">만기별 금리 — 오른쪽으로 갈수록 만기가 깁니다</span></div>
+      <div class="card-b">
+        <div id="curveChart"></div>
+        <div id="curveRows" style="margin-top:10px"></div>
+        <p class="note">돈을 오래 빌려줄수록 이자를 더 받는 것이 보통이라, 곡선은 대개 오른쪽으로 올라갑니다.
+        단기 금리가 장기 금리보다 높아지면(역전) 시장이 앞으로 금리가 내려갈 만큼 경기가 식는다고 보고 있다는 뜻으로 읽힙니다.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h2>장단기 금리차</h2><span class="badge" id="spreadBadge">확인 중</span></div>
+      <div class="card-b" id="spreadBox"></div>
+    </div>
+  </div>
+
+  <div class="sec card">
+    <div class="card-h"><h2>미국 대표 종목</h2><span class="hint" id="usStockAsOf">최근 종가 기준</span></div>
+    <div class="card-b tb-scroll">
+      <table>
+        <thead><tr><th>종목</th><th>현재가</th><th>전일 대비</th><th>등락률</th><th style="text-align:left">분야</th></tr></thead>
+        <tbody id="usTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec card">
+    <div class="card-h"><h2>국내 대표 종목</h2><span class="hint" id="krStockAsOf">코스피 종가 기준</span></div>
+    <div class="card-b tb-scroll">
+      <table>
+        <thead><tr><th>종목</th><th>현재가</th><th>전일 대비</th><th>등락률</th><th style="text-align:left">분야</th></tr></thead>
+        <tbody id="krTable"></tbody>
+      </table>
+      <p class="note">종목 시세는 최근 정규장 종가 기준입니다. 장중 실시간 호가와는 차이가 있으며, 특정 종목을 추천하는 목록이 아닙니다.</p>
+    </div>
+  </div>
+
+  <div class="sec card">
+    <div class="card-h"><h2>국내 상장 ETF</h2><span class="hint">원화로 사는 대표 ETF — 세금 구조는 해외 상장분과 다릅니다</span></div>
+    <div class="card-b tb-scroll">
+      <table>
+        <thead><tr><th>ETF</th><th>현재가</th><th>전일 대비</th><th>등락률</th><th style="text-align:left">추종 대상</th></tr></thead>
+        <tbody id="krEtfTable"></tbody>
+      </table>
+      <p class="note">국내에 상장된 해외지수 ETF는 매매차익이 <b>배당소득</b>으로 15.4% 과세되고 금융소득종합과세에 합산됩니다.
+      같은 지수를 담아도 미국 상장 ETF(VOO·QQQ)와 세금이 다르니 <b>용어·자료</b> 탭의 세금 비교를 함께 보세요.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ ETF ============ -->
+<section class="panel" id="panel-etf" hidden>
+  <div class="sec" style="margin-top:18px">
+    <h2 class="sec-title">비교할 ETF <span>대표 ETF 5종 · 참고용 공시 기준값</span></h2>
+    <div class="chips" id="etfChips" style="margin-bottom:12px"></div>
+
+    <div class="card">
+      <div class="card-h">
+        <h2>상대 성과</h2>
+        <div class="hint" id="etfRange">최근 6개월 첫 시점을 0%로 맞춰 비교</div>
+      </div>
+      <div class="card-b">
+        <div id="etfChart"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec grid g5" id="etfCards"></div>
+
+  <div class="sec card">
+    <div class="card-h"><h2>핵심 지표 비교</h2><span class="hint">운용보수·배당수익률·순자산은 운용사 공시 기준</span></div>
+    <div class="card-b tb-scroll">
+      <table>
+        <thead><tr><th>ETF</th><th>기준가</th><th>6개월 수익률</th><th>최대 낙폭</th><th>운용보수</th><th>배당수익률</th><th>순자산</th><th style="text-align:left">특징</th></tr></thead>
+        <tbody id="etfTable"></tbody>
+      </table>
+      <p class="note">최대 낙폭(MDD)은 해당 기간 고점에서 저점까지 떨어진 폭입니다. 수치는 학습·비교용 참고값이며 실제 투자 판단의 근거로 삼지 마세요.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 뉴스 ============ -->
+<section class="panel" id="panel-news" hidden>
+  <div class="sec" style="margin-top:18px">
+    <h2 class="sec-title">경제 헤드라인 <span id="newsAsOf">구글 뉴스 검색 결과 · 15분 단위로 모읍니다</span></h2>
+    <div class="grid g3" id="newsGrid"></div>
+    <p class="note">제목을 누르면 해당 매체의 원문으로 이동합니다. 검색어(코스피·뉴욕증시·기준금리 등)로 자동 수집한 목록이라
+    특정 매체나 견해를 고르거나 추천하지 않으며, 기사 제목만으로 매매를 판단하지 마세요.</p>
+  </div>
+</section>
+
+<!-- ============ 대출 ============ -->
+<section class="panel" id="panel-loan" hidden>
+  <div class="sec grid g4" style="margin-top:18px" id="loanKpi"></div>
+
+  <div class="sec split-r">
+    <div class="card">
+      <div class="card-h"><h2>대출 조건</h2><span class="badge">입력 즉시 자동 계산</span></div>
+      <div class="card-b">
+        <div class="field"><label for="lnAmt">대출금액</label>
+          <div class="inp"><input id="lnAmt" inputmode="numeric" value="300,000,000"><span>원</span></div></div>
+        <div class="field"><label for="lnRate">연이자율</label>
+          <div class="inp"><input id="lnRate" inputmode="decimal" value="4.2"><span>%</span></div></div>
+        <div class="field"><label for="lnYear">대출기간</label>
+          <div class="inp"><input id="lnYear" inputmode="numeric" value="30"><span>년</span></div></div>
+        <div class="field"><label>상환방식</label>
+          <div class="seg" id="lnType" style="width:100%">
+            <button type="button" data-t="eqpay" aria-pressed="true" style="flex:1">원리금균등</button>
+            <button type="button" data-t="eqprin" aria-pressed="false" style="flex:1">원금균등</button>
+            <button type="button" data-t="bullet" aria-pressed="false" style="flex:1">만기일시</button>
+          </div></div>
+        <div class="field"><label for="lnGrace">거치기간 <span style="color:var(--dim); font-weight:500">이자만 내는 기간</span></label>
+          <div class="inp"><input id="lnGrace" inputmode="numeric" value="0"><span>개월</span></div></div>
+        <button class="btn-ghost" id="lnReset" type="button">초기화</button>
+      </div>
+    </div>
+
+    <div style="display:grid; gap:12px">
+      <div class="card">
+        <div class="card-h"><h2>원금 · 이자 상환 추이</h2>
+          <div class="hint"><span class="dot" style="background:#1f5fd0"></span>남은 원금 &nbsp; <span class="dot" style="background:#d92d20"></span>누적 이자</div>
+        </div>
+        <div class="card-b"><div id="lnChart"></div><p class="note" id="lnChartNote"></p></div>
+      </div>
+
+      <div class="split">
+        <div class="card">
+          <div class="card-h"><h2>상환 일정</h2><span class="hint" id="lnSchedHint"></span></div>
+          <div class="card-b tb-scroll tb-cap">
+            <table><thead><tr><th>회차</th><th>납입 원금</th><th>이자</th><th>월 상환액</th><th>남은 원금</th></tr></thead>
+            <tbody id="lnTable"></tbody></table>
+          </div>
+        </div>
+        <div style="display:grid; gap:12px">
+          <div class="card">
+            <div class="card-h"><h2>금리가 바뀌면</h2></div>
+            <div class="card-b"><table><thead><tr><th>연이자율</th><th>월 상환액</th></tr></thead><tbody id="lnSens"></tbody></table>
+            <p class="note" id="lnSensNote"></p></div>
+          </div>
+          <div class="card">
+            <div class="card-h"><h2>비용 구성</h2></div>
+            <div class="card-b" id="lnMix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 복리 ============ -->
+<section class="panel" id="panel-compound" hidden>
+  <div class="sec" style="margin-top:18px">
+    <div class="seg" id="cpMode">
+      <button type="button" data-m="lump" aria-pressed="true">일시금 계산</button>
+      <button type="button" data-m="monthly" aria-pressed="false">적립식 계산</button>
+    </div>
+  </div>
+
+  <div class="sec split-r">
+    <div class="card">
+      <div class="card-h"><h2>조건 입력</h2></div>
+      <div class="card-b">
+        <div class="field"><label for="cpInit">시작 금액</label>
+          <div class="inp"><input id="cpInit" inputmode="numeric" value="500,000"><span>원</span></div></div>
+        <div class="field" id="cpMonthlyField"><label for="cpMonthly">매월 적립 금액</label>
+          <div class="inp"><input id="cpMonthly" inputmode="numeric" value="500,000"><span>원</span></div>
+          <p class="note" style="margin-top:6px">두 번째 달부터 원금에 더해집니다.</p></div>
+        <div class="field"><label>투자 기간</label>
+          <div style="display:flex; gap:8px">
+            <div class="inp" style="flex:1"><input id="cpYear" inputmode="numeric" value="25"><span>년</span></div>
+            <div class="inp" style="flex:1"><input id="cpMonth" inputmode="numeric" value="0"><span>개월</span></div>
+          </div></div>
+        <div class="field"><label for="cpRate">연 수익률</label>
+          <div class="inp"><input id="cpRate" inputmode="decimal" value="8"><span>%</span></div></div>
+        <button class="btn-main" id="cpRun" type="button">계산하기</button>
+      </div>
+    </div>
+
+    <div style="display:grid; gap:12px">
+      <div class="card">
+        <div class="card-b">
+          <div class="grid g3" id="cpKpi" style="margin-bottom:16px"></div>
+          <div id="cpChart"></div>
+          <div class="hint" style="margin-top:8px; font-size:12px; color:var(--dim)">
+            <span class="dot" style="background:#1f5fd0"></span>누적 원금 &nbsp; <span class="dot" style="background:#8db600"></span>복리 포함 평가액
+          </div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="card">
+          <div class="card-h"><h2>연도별 예상 자산</h2></div>
+          <div class="card-b tb-scroll tb-cap">
+            <table><thead><tr><th>기간</th><th>누적 원금</th><th>수익</th><th>평가액</th></tr></thead><tbody id="cpTable"></tbody></table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-h"><h2>복리 방식별 비교</h2><span class="hint">같은 조건일 때</span></div>
+          <div class="card-b" id="cpFreq"></div>
+          <div class="card-b" style="padding-top:0"><p class="note">한 달을 30일, 1년을 360일로 가정했습니다. 세금·수수료·물가상승률은 반영하지 않았습니다.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 환율·예적금 ============ -->
+<section class="panel" id="panel-life" hidden>
+  <div class="sec split" style="margin-top:18px">
+
+    <div class="card">
+      <div class="card-h"><h2>환율 계산</h2><span class="badge" id="fxCalcBadge">기준 환율</span></div>
+      <div class="card-b">
+        <div class="field"><label for="fxAmt">금액</label>
+          <div class="inp"><input id="fxAmt" inputmode="decimal" value="1,000,000"><span id="fxFromUnit">원</span></div></div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:13px">
+          <div class="seg" id="fxDir" style="flex:1">
+            <button type="button" data-d="krw2f" aria-pressed="true" style="flex:1">원화 → 외화</button>
+            <button type="button" data-d="f2krw" aria-pressed="false" style="flex:1">외화 → 원화</button>
+          </div>
+        </div>
+        <div class="field"><label>통화</label>
+          <div class="chips" id="fxCur"></div></div>
+        <div id="fxResult" style="margin-top:16px"></div>
+        <p class="note">매매기준율 기준입니다. 실제 은행 환전은 여기에 수수료(스프레드)가 붙어 살 때는 더 비싸고, 팔 때는 더 쌉니다.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h2>예금 · 적금</h2><span class="hint">이자소득세 15.4% 반영</span></div>
+      <div class="card-b">
+        <div class="seg" id="dpMode" style="margin-bottom:14px; width:100%">
+          <button type="button" data-m="deposit" aria-pressed="true" style="flex:1">예금(목돈)</button>
+          <button type="button" data-m="saving" aria-pressed="false" style="flex:1">적금(매달)</button>
+        </div>
+        <div class="field"><label id="dpAmtLabel" for="dpAmt">예치 금액</label>
+          <div class="inp"><input id="dpAmt" inputmode="numeric" value="10,000,000"><span>원</span></div></div>
+        <div class="field"><label for="dpRate">연이자율</label>
+          <div class="inp"><input id="dpRate" inputmode="decimal" value="3.2"><span>%</span></div></div>
+        <div class="field"><label for="dpMonth">기간</label>
+          <div class="inp"><input id="dpMonth" inputmode="numeric" value="12"><span>개월</span></div></div>
+        <div class="field"><label>이자 방식</label>
+          <div class="seg" id="dpType" style="width:100%">
+            <button type="button" data-t="simple" aria-pressed="true" style="flex:1">단리</button>
+            <button type="button" data-t="compound" aria-pressed="false" style="flex:1">월복리</button>
+          </div></div>
+        <div id="dpResult" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec split">
+    <div class="card">
+      <div class="card-h"><h2>72의 법칙</h2><span class="hint">원금이 2배 되는 데 걸리는 시간</span></div>
+      <div class="card-b">
+        <div class="field"><label for="ruleRate">연 수익률</label>
+          <div class="inp"><input id="ruleRate" inputmode="decimal" value="7"><span>%</span></div></div>
+        <div id="ruleOut"></div>
+        <p class="note">72를 수익률로 나누면 원금이 2배가 되는 햇수가 대략 나옵니다. 암산으로 감을 잡는 용도이고, 정확한 값은 옆에 함께 표시했습니다.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h2>물가를 감안하면</h2><span class="hint">실질 가치 계산</span></div>
+      <div class="card-b">
+        <div class="field"><label for="infAmt">현재 금액</label>
+          <div class="inp"><input id="infAmt" inputmode="numeric" value="100,000,000"><span>원</span></div></div>
+        <div style="display:flex; gap:8px">
+          <div class="field" style="flex:1"><label for="infRate">연 물가상승률</label>
+            <div class="inp"><input id="infRate" inputmode="decimal" value="2.5"><span>%</span></div></div>
+          <div class="field" style="flex:1"><label for="infYear">기간</label>
+            <div class="inp"><input id="infYear" inputmode="numeric" value="20"><span>년</span></div></div>
+        </div>
+        <div id="infOut"></div>
+        <p class="note">돈의 액수는 그대로여도 살 수 있는 양은 줄어듭니다. 예금 이자가 물가상승률보다 낮으면 실질 가치는 오히려 감소합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 용어·자료 ============ -->
+<section class="panel" id="panel-learn" hidden>
+  <div class="sec split" style="margin-top:18px">
+    <div style="display:grid; gap:12px">
+      <div class="card">
+        <div class="card-h"><h2>투자 세금 한눈에</h2><span class="hint">2026년 기준</span></div>
+        <div class="card-b">
+          <div class="tb-scroll">
+            <table id="taxTable"></table>
+          </div>
+          <div id="taxNotes" style="margin-top:14px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>세금 계산</h2><span class="hint">직접 넣어 보세요</span></div>
+        <div class="card-b">
+          <div class="seg" id="txMode" style="width:100%; margin-bottom:14px">
+            <button type="button" data-m="oversea" aria-pressed="true" style="flex:1">해외주식 양도세</button>
+            <button type="button" data-m="dividend" aria-pressed="false" style="flex:1">배당소득세</button>
+            <button type="button" data-m="domestic" aria-pressed="false" style="flex:1">국내주식 매도</button>
+          </div>
+          <div id="txForm"></div>
+          <div id="txResult" style="margin-top:16px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><h2>지표 읽는 법</h2><span class="hint">숫자보다 맥락이 먼저입니다</span></div>
+        <div class="card-b glossary" id="glossary"></div>
+      </div>
+    </div>
+    <div style="display:grid; gap:12px">
+      <div class="card">
+        <div class="card-h"><h2>원문 확인처</h2><span class="hint">공식 통계·시황</span></div>
+        <div class="card-b" id="srcLinks"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><h2>이 페이지의 데이터</h2></div>
+        <div class="card-b" id="dataStatus"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+"use strict";
+
+/* =======================================================================
+   0. 내장 스냅샷 — 네트워크가 막히거나 API가 죽어도 화면은 항상 채워진다.
+      값은 2026-08-21(미국 증시 마감) 기준 참고값.
+   ======================================================================= */
+/* 시세 중계 API — 구글 서버가 대신 받아오므로 브라우저 CORS·망 차단과 무관 */
+var PROXY = "https://script.google.com/macros/s/AKfycbz_F5zIG69NdbgdxjLSJLPFLulqzenJ31Xp0Jue8UKspKbgHwFzG3YqGEyu2Vznk7XV/exec";
+
+var SNAP_DATE = "2026-08-21";
+var SNAP = {
+  indices: [
+    {key:"SPX",  name:"S&P 500",        sub:"SPX", last:7641.16,  prev:7707.98},
+    {key:"NDX",  name:"나스닥 100",      sub:"NDX", last:29213.16, prev:29426.02},
+    {key:"DJI",  name:"다우존스",        sub:"DJI", last:52759.21, prev:53463.05},
+    {key:"SOX",  name:"필라델피아 반도체", sub:"SOX", last:11800.02, prev:11738.23}
+  ],
+  /* 국내·아시아 지수는 확인된 참고값이 없어 비워 둔다.
+     중계 API가 붙으면 실시간으로 채워지고, 못 붙으면 카드에 안내가 뜬다. */
+  domestic: [
+    {key:"KOSPI",  name:"코스피",     sub:"KOSPI",  last:null, prev:null},
+    {key:"KOSDAQ", name:"코스닥",     sub:"KOSDAQ", last:null, prev:null},
+    {key:"NI225",  name:"닛케이 225",  sub:"N225",   last:null, prev:null},
+    {key:"VIX",    name:"VIX 변동성",  sub:"VIX",    last:16.01, prev:14.89}
+  ],
+  fx: [
+    {key:"USDKRW", name:"원/달러", unit:"원", last:1386.40, prev:1391.20},
+    {key:"USDJPY", name:"엔/달러", unit:"엔", last:148.62,  prev:149.05},
+    {key:"EURUSD", name:"유로/달러", unit:"달러", last:1.1042, prev:1.1008},
+    {key:"USDCNY", name:"위안/달러", unit:"위안", last:7.0850, prev:7.0921}
+  ],
+  assets: [
+    {key:"GOLD", name:"금",     tag:"GOLD/USD", unit:"$", last:4579,   prev:4489},
+    {key:"SILV", name:"은",     tag:"SILVER/USD", unit:"$", last:68.28, prev:65.73},
+    {key:"COPR", name:"구리",   tag:"COPPER/USD", unit:"$", last:6.49,  prev:6.49},
+    {key:"WTI",  name:"WTI 유가", tag:"CRUDE/USD", unit:"$", last:86.30, prev:85.83},
+    {key:"BTC",  name:"비트코인", tag:"BTC", unit:"$", last:73097, prev:69266},
+    {key:"ETH",  name:"이더리움", tag:"ETH", unit:"$", last:2326,  prev:2251},
+    {key:"SOL",  name:"솔라나",  tag:"SOL", unit:"$", last:87.63, prev:85.37},
+    {key:"XRP",  name:"리플",    tag:"XRP", unit:"$", last:1.27,  prev:1.10}
+  ],
+  fng: {value:52, label:"중립", asOf:SNAP_DATE, hist:[{k:"1주 전",v:64},{k:"1개월 전",v:43},{k:"1년 전",v:53}]},
+  policy: {
+    kr:{rate:2.75, prev:2.50, at:"2026-07-16", dir:"인상"},
+    us:{rate:3.75, prev:4.00, at:"2025-12-11", dir:"인하"}
+  }
+};
+
+/* 기준금리 추이 (연도별 대표값, 학습용 요약 시계열) */
+var RATE_SERIES = {
+  labels:["2021.08","2022.02","2022.08","2023.02","2023.08","2024.02","2024.08","2025.02","2025.08","2026.02","2026.08"],
+  kr:[0.75,1.25,2.50,3.50,3.50,3.50,3.50,3.00,2.50,2.50,2.75],
+  us:[0.25,0.25,2.50,4.75,5.50,5.50,5.50,4.50,4.25,4.00,3.75]
+};
+
+/* ETF 참고 데이터 (운용사 공시 기준 요약값 + 6개월 상대성과 곡선) */
+var ETFS = [
+  {t:"VOO",  name:"S&P 500",   color:"#1f5fd0", price:706.91, chg:-5.90, ret6:11.5, mdd:-8.9,  fee:0.03, div:1.20, aum:"1.4조 달러", note:"미국 대형주 전체"},
+  {t:"QQQ",  name:"나스닥 100", color:"#d92d20", price:716.08, chg:-5.15, ret6:17.6, mdd:-11.3, fee:0.20, div:0.60, aum:"3,600억 달러", note:"나스닥 기술주 중심"},
+  {t:"SCHD", name:"배당성장",   color:"#8db600", price:35.09,  chg:-0.26, ret6:11.0, mdd:-4.6,  fee:0.06, div:3.70, aum:"700억 달러", note:"배당 늘려온 기업"},
+  {t:"SOXX", name:"반도체",     color:"#16161a", price:519.67, chg:2.68,  ret6:44.6, mdd:-29.0, fee:0.35, div:0.70, aum:"150억 달러", note:"반도체 집중 · 변동 큼"},
+  {t:"MAGS", name:"빅테크7",    color:"#9a9aa1", price:67.66,  chg:-0.77, ret6:8.1,  mdd:-13.9, fee:0.29, div:0.40, aum:"20억 달러", note:"대형 기술주 7종목"}
+];
+/* 26주(6개월) 상대성과 % — 시작점 0 기준 */
+var ETF_CURVE = {
+  VOO: [0,-1.2,-2.4,-3.6,-2.1,0.4,2.8,4.6,6.1,7.4,8.2,9.1,10.4,11.8,12.6,13.1,12.2,11.4,12.0,12.9,13.4,12.7,11.9,11.2,11.4,11.5],
+  QQQ: [0,-1.8,-3.4,-5.1,-2.9,0.9,4.2,7.1,9.4,11.6,13.1,14.4,16.2,18.4,19.6,20.1,18.4,16.9,17.8,19.2,19.9,18.6,17.4,16.6,17.1,17.6],
+  SCHD:[0,-0.9,-1.9,-2.8,-1.7,0.2,1.9,3.2,4.4,5.4,6.1,6.9,7.9,8.9,9.6,10.1,9.4,8.8,9.4,10.1,10.6,10.2,9.7,9.4,10.6,11.0],
+  SOXX:[0,-2.6,-5.1,-7.4,-3.9,1.8,7.4,13.2,18.6,24.1,28.4,32.6,37.9,43.2,46.1,44.9,38.6,33.4,36.2,40.1,42.4,39.1,35.6,33.9,41.2,44.6],
+  MAGS:[0,-2.1,-4.2,-6.2,-3.8,-0.4,2.4,4.6,6.4,7.9,8.8,9.6,10.9,12.4,13.1,12.4,10.1,8.2,9.1,10.4,11.1,9.6,8.1,7.2,7.8,8.1]
+};
+
+/* =======================================================================
+   1. 유틸
+   ======================================================================= */
+function $(id){ return document.getElementById(id); }
+function el(tag, cls, html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
+function nf(n, d){ if(!isFinite(n)) return "—"; return Number(n).toLocaleString("ko-KR",{minimumFractionDigits:d||0, maximumFractionDigits:d==null?0:d}); }
+function money(n){ return nf(Math.round(n))+"원"; }
+function pct(n, d){ var v=(n>0?"+":"")+nf(n, d==null?2:d)+"%"; return v; }
+function dirCls(n){ return n>0?"up":(n<0?"down":"flat"); }
+function digits(v){ var a=Math.abs(v); if(a>=1000) return 2; if(a>=10) return 2; if(a>=1) return 4; return 4; }
+function timeStr(d){ var p=function(x){return String(x).padStart(2,"0");}; return p(d.getHours())+":"+p(d.getMinutes()); }
+function dateStr(d){ var p=function(x){return String(x).padStart(2,"0");}; return d.getFullYear()+"."+p(d.getMonth()+1)+"."+p(d.getDate()); }
+function parseNum(s){ var n=parseFloat(String(s).replace(/[^0-9.\-]/g,"")); return isFinite(n)?n:0; }
+
+/* 타임아웃 붙은 fetch — 어떤 실패든 null 로 삼킨다 */
+function grab(url, ms){
+  ms = ms || 7000;
+  var ctl = (typeof AbortController!=="undefined") ? new AbortController() : null;
+  var timer = setTimeout(function(){ if(ctl) ctl.abort(); }, ms);
+  var opt = ctl ? {signal:ctl.signal, cache:"no-store"} : {cache:"no-store"};
+  return fetch(url, opt).then(function(r){
+    clearTimeout(timer);
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    return r.json();
+  }).catch(function(){ clearTimeout(timer); return null; });
+}
+
+/* =======================================================================
+   2. 상태
+   ======================================================================= */
+var STATE = {
+  indices: SNAP.indices.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  domestic: SNAP.domestic.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  /* 시장금리·달러인덱스 — 기준금리 카드에 함께 묶어 보여준다 */
+  rates: {US10Y:{last:null, prev:null, live:false}, DXY:{last:null, prev:null, live:false}},
+  fx:      SNAP.fx.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  assets:  SNAP.assets.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  fng:     Object.assign({}, SNAP.fng, {live:false}),
+  cryptoSeries: null,
+  fxSeries: null,
+  fxAsOf: null,
+  flow: "rate",
+  etfOn: {VOO:true, QQQ:true, SCHD:true, SOXX:true, MAGS:true},
+  /* 확장 데이터 — 세계지수·종목·금리커브 / 경제뉴스 / 김치 프리미엄 */
+  extra: null, extraDate: null, news: null, kimchi: null,
+  sources: []
+};
+
+/* =======================================================================
+   3. 렌더 — 시장현황
+   ======================================================================= */
+function quoteCard(o){
+  var c = el("div","card quote");
+  if(o.last==null || !isFinite(o.last)){
+    c.innerHTML =
+      '<div class="nm"><b>'+o.name+'</b><span>'+o.sub+'</span></div>'+
+      '<div class="val skel" style="font-size:19px">불러오지 못함</div>'+
+      '<div class="prev">중계 서버에 연결되면 표시됩니다</div>'+
+      '<div class="chg flat" style="color:var(--dim);font-weight:600;font-size:12.5px">'+
+        '<a href="http://data.krx.co.kr" target="_blank" rel="noopener noreferrer" style="color:var(--sub)">한국거래소에서 확인 ↗</a></div>';
+    return c;
+  }
+  var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
+  var d = has ? o.last-o.prev : 0, p = has ? d/o.prev*100 : 0;
+  c.innerHTML =
+    '<div class="nm"><b>'+o.name+'</b><span>'+(o.live?'<span class="badge live" style="margin-right:6px">실시간</span>':'')+o.sub+'</span></div>'+
+    '<div class="val">'+nf(o.last,2)+'</div>'+
+    '<div class="prev">'+(has ? '전일 '+nf(o.prev,2) : '&nbsp;')+'</div>'+
+    (has
+      ? '<div class="chg '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,2)+' ('+pct(p)+') '+(d>0?"상승":(d<0?"하락":"보합"))+'</div>'
+      : '<div class="chg flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div>');
+  return c;
+}
+function renderIndices(){
+  var g = $("idxGrid"); g.innerHTML = "";
+  STATE.indices.forEach(function(o){ g.appendChild(quoteCard(o)); });
+  var h = $("domGrid"); h.innerHTML = "";
+  STATE.domestic.forEach(function(o){ h.appendChild(quoteCard(o)); });
+  var liveN = STATE.indices.concat(STATE.domestic).filter(function(o){ return o.live; }).length;
+  $("idxAsOf").textContent = liveN ? "실시간 · "+(STATE.quoteDate||"최근 종가 기준") : "참고값 · "+SNAP_DATE+" 기준";
+}
+
+/* 달러 기준 시세는 감이 잘 안 오므로 원화로 환산한 줄을 함께 보여준다.
+   엔화는 100엔 단위가 관례. */
+function toKrwLine(o, usdkrw){
+  if(!usdkrw || !isFinite(usdkrw) || !isFinite(o.last) || o.last<=0) return "";
+  if(o.key==="USDJPY") return "100엔 = <b>"+nf(usdkrw/o.last*100, 1)+"원</b>";
+  if(o.key==="EURUSD") return "1유로 = <b>"+nf(usdkrw*o.last, 1)+"원</b>";
+  if(o.key==="USDCNY") return "1위안 = <b>"+nf(usdkrw/o.last, 1)+"원</b>";
+  return "";
+}
+
+function renderFx(){
+  var g = $("fxGrid"); g.innerHTML = "";
+  var anyLive = false;
+  var usdkrw = null;
+  STATE.fx.forEach(function(x){ if(x.key==="USDKRW" && isFinite(x.last)) usdkrw = x.last; });
+
+  STATE.fx.forEach(function(o){
+    if(o.live) anyLive = true;
+    var dg = (o.key==="EURUSD" || o.key==="USDCNY") ? 4 : 2;
+    var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
+    var d = has ? o.last-o.prev : 0, p = has ? d/o.prev*100 : 0;
+    var krw = toKrwLine(o, usdkrw);
+    var t = el("div","tile");
+    t.innerHTML =
+      '<div class="t1"><span>'+o.name+'</span>'+(o.live?'<span class="badge live">실시간</span>':'<span class="badge">참고값</span>')+'</div>'+
+      '<div class="t2">'+nf(o.last,dg)+' <span style="font-size:12px;color:var(--dim);font-weight:600">'+o.unit+'</span></div>'+
+      (has
+        ? '<div class="t3 '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,dg)+' ('+pct(p)+')</div><div class="t4">직전 고시 '+nf(o.prev,dg)+'</div>'
+        : '<div class="t3 flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div><div class="t4">&nbsp;</div>')+
+      (krw ? '<div class="t5">'+krw+'</div>' : '');
+    g.appendChild(t);
+  });
+  $("fxAsOf").textContent = anyLive
+    ? "실시간 · " + (STATE.fxAsOf ? STATE.fxAsOf+" 고시 기준" : "직전 고시 기준")
+    : "참고값 · "+SNAP_DATE+" 기준";
+}
+
+function renderAssets(){
+  var g = $("assetGrid"); g.innerHTML = "";
+  STATE.assets.forEach(function(o){
+    var d = o.last - o.prev, p = o.prev ? d/o.prev*100 : 0;
+    var dg = o.last>=1000 ? 0 : (o.last>=10 ? 2 : 2);
+    var t = el("div","tile");
+    t.innerHTML =
+      '<div class="t1"><span>'+o.name+' · '+o.tag+'</span>'+(o.live?'<span class="badge live">실시간</span>':'<span class="badge">참고값</span>')+'</div>'+
+      '<div class="t2">'+o.unit+nf(o.last,dg)+'</div>'+
+      '<div class="t3 '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,dg)+' ('+pct(p)+')</div>'+
+      '<div class="t4">전일 '+o.unit+nf(o.prev,dg)+'</div>';
+    g.appendChild(t);
+  });
+  var live = STATE.assets.some(function(o){ return o.live; });
+  $("assetAsOf").textContent = live ? "코인은 실시간 · 원자재는 참고값" : "참고값 · "+SNAP_DATE+" 기준";
+}
+
+function fngTone(v){
+  if(v<25) return "극단적 공포"; if(v<45) return "공포";
+  if(v<=55) return "중립"; if(v<=75) return "탐욕"; return "극단적 탐욕";
+}
+function renderFng(){
+  var f = STATE.fng;
+  $("fngVal").textContent = f.value;
+  $("fngLabel").textContent = f.label || fngTone(f.value);
+  $("fngPin").style.left = Math.max(0, Math.min(100, f.value)) + "%";
+  $("fngBadge").textContent = f.live ? "실시간" : "참고값";
+  $("fngBadge").className = "badge" + (f.live ? " live" : "");
+  $("fngAsOf").innerHTML = (f.live ? "암호화폐 시장 기준" : "참고값") + "<br>" + (f.asOf||"");
+  var h = $("fngHist"); h.innerHTML = "";
+  (f.hist||[]).forEach(function(o){
+    h.appendChild(el("div", null, '<span>'+o.k+'</span><b>'+o.v+'</b>'));
+  });
+}
+
+function renderPolicy(){
+  var p = SNAP.policy, box = $("policyBox");
+  var mkt = function(key, name, hint, dg, unit){
+    var o = STATE.rates[key];
+    if(!o || o.last==null || !isFinite(o.last)){
+      return '<div class="rowline"><span>'+name+'</span><b style="color:var(--dim);font-weight:600;font-size:13px">—</b></div>';
+    }
+    var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
+    var d = has ? o.last-o.prev : 0, pc = has ? d/o.prev*100 : 0;
+    return '<div class="rowline"><span>'+name+
+      (o.live?' <span class="badge live" style="margin-left:4px">실시간</span>':'')+
+      '</span><b style="font-size:18px">'+nf(o.last,dg)+unit+'</b></div>'+
+      '<div class="note" style="margin:-4px 0 10px">'+hint+
+      (has ? ' · <span class="'+dirCls(d)+'" style="font-weight:700">'+(d>0?"+":"")+nf(d,dg)+unit+' ('+pct(pc)+')</span>' : '')+
+      '</div>';
+  };
+
+  box.innerHTML =
+    '<div class="rowline"><span>한국 기준금리</span><b style="font-size:18px">'+p.kr.rate.toFixed(2)+'%</b></div>'+
+    '<div class="note" style="margin:-4px 0 10px">'+p.kr.at+' '+p.kr.dir+' (이전 '+p.kr.prev.toFixed(2)+'%)</div>'+
+    '<div class="rowline"><span>미국 기준금리 <span style="color:var(--dim);font-size:12px">상단</span></span><b style="font-size:18px">'+p.us.rate.toFixed(2)+'%</b></div>'+
+    '<div class="note" style="margin:-4px 0 10px">'+p.us.at+' '+p.us.dir+' (이전 '+p.us.prev.toFixed(2)+'%) · 한미 금리차 '+(p.us.rate-p.kr.rate).toFixed(2)+'%p</div>'+
+    '<div style="height:1px;background:var(--line);margin:4px 0 12px"></div>'+
+    mkt("US10Y", "미국 10년물 국채금리", "시장이 매기는 장기금리 — 주식·부동산 가격의 기준선", 3, "%")+
+    mkt("DXY", "달러인덱스", "주요 6개 통화 대비 달러의 힘 (100 기준)", 2, "");
+}
+
+/* =======================================================================
+   4. SVG 차트 (라이브러리 없음)
+   ======================================================================= */
+function lineChart(opt){
+  /* 컨테이너 실제 폭으로 그려야 축 글자가 축소돼 뭉개지지 않는다(모바일) */
+  var host = opt.host ? $(opt.host) : null;
+  var W = opt.width || (host && host.clientWidth > 200 ? host.clientWidth : 720);
+  var H = opt.height || 300;
+  if(W < 420) H = Math.max(200, H - 40);
+  var pad = {t:14, r:opt.padR==null?46:opt.padR, b:26, l:opt.padL==null?48:opt.padL};
+  var series = opt.series, labels = opt.labels;
+  var all = [];
+  series.forEach(function(s){ s.data.forEach(function(v){ if(isFinite(v)) all.push(v); }); });
+  if(!all.length) return '<p class="skel">표시할 데이터가 없습니다.</p>';
+  var mnFix = (opt.min!=null), mxFix = (opt.max!=null);
+  var mn = mnFix?opt.min:Math.min.apply(null, all);
+  var mx = mxFix?opt.max:Math.max.apply(null, all);
+  if(mn===mx){ mn-=1; mx+=1; }
+  var span = mx-mn;
+  if(!mnFix) mn -= span*0.08;
+  mx += span*0.08;
+  /* 눈금을 사람이 읽기 좋은 값(1·2·2.5·5 배수)으로 맞춘다 */
+  var ticks = opt.ticks || 5;
+  var raw = (mx-mn)/ticks;
+  var mag = Math.pow(10, Math.floor(Math.log(raw)/Math.LN10));
+  var norm = raw/mag;
+  var step = (norm<=1?1:norm<=2?2:norm<=2.5?2.5:norm<=5?5:10) * mag;
+  if(isFinite(step) && step>0){
+    if(!mnFix) mn = Math.floor(mn/step)*step;
+    var realMax = Math.max.apply(null, all);
+    mx = mn + step*Math.max(2, Math.ceil((realMax-mn)/step));
+    ticks = Math.round((mx-mn)/step);
+  }
+  var n = labels.length;
+  var X = function(i){ return pad.l + (W-pad.l-pad.r) * (n<2?0.5:i/(n-1)); };
+  var Y = function(v){ return pad.t + (H-pad.t-pad.b) * (1-(v-mn)/(mx-mn)); };
+
+  var s = '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet" role="img">';
+  var i, v, y;
+  for(i=0;i<=ticks;i++){
+    v = mn + (mx-mn)*i/ticks; y = Y(v);
+    s += '<line class="axis" x1="'+pad.l+'" y1="'+y.toFixed(1)+'" x2="'+(W-pad.r)+'" y2="'+y.toFixed(1)+'"/>';
+    s += '<text class="axtxt" x="'+(pad.l-8)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="end">'+(opt.fmtY?opt.fmtY(v):nf(v,1))+'</text>';
+  }
+  /* 라벨은 폭이 허용하는 만큼만 — 좁은 화면에서 글자가 겹치는 것을 막는다 */
+  var maxLb = Math.max(3, Math.floor((W-pad.l-pad.r)/78));
+  var step = Math.max(1, Math.ceil((n-1)/(maxLb-1)));
+  for(i=0;i<n;i+=step){
+    s += '<text class="axtxt" x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle">'+labels[i]+'</text>';
+  }
+  var lastDrawn = Math.floor((n-1)/step)*step;
+  if(lastDrawn !== n-1 && (X(n-1)-X(lastDrawn)) > 52){
+    s += '<text class="axtxt" x="'+X(n-1).toFixed(1)+'" y="'+(H-8)+'" text-anchor="end">'+labels[n-1]+'</text>';
+  }
+  series.forEach(function(sr){
+    var d = "", started=false, j;
+    for(j=0;j<sr.data.length;j++){
+      if(!isFinite(sr.data[j])) continue;
+      d += (started?" L":"M") + X(j).toFixed(1) + " " + Y(sr.data[j]).toFixed(1);
+      started = true;
+    }
+    if(!d) return;
+    if(sr.fill){
+      var area = d + " L"+X(sr.data.length-1).toFixed(1)+" "+Y(mn).toFixed(1)+" L"+X(0).toFixed(1)+" "+Y(mn).toFixed(1)+" Z";
+      s += '<path d="'+area+'" fill="'+sr.color+'" opacity="0.10"/>';
+    }
+    s += '<path d="'+d+'" fill="none" stroke="'+sr.color+'" stroke-width="'+(sr.w||2)+'" stroke-linejoin="round" stroke-linecap="round"'+(sr.dash?' stroke-dasharray="4 4"':'')+'/>';
+    if(sr.label && opt.endLabel!==false){
+      var last = sr.data[sr.data.length-1];
+      if(isFinite(last)){
+        s += '<circle cx="'+X(sr.data.length-1).toFixed(1)+'" cy="'+Y(last).toFixed(1)+'" r="3" fill="'+sr.color+'"/>';
+      }
+    }
+  });
+  s += '</svg>';
+  return s;
+}
+
+function legend(items){
+  return items.map(function(o){
+    return '<span style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700"><span class="dot" style="background:'+o.color+';margin:0"></span>'+o.label+(o.value!=null?' <span style="color:var(--sub);font-weight:600">'+o.value+'</span>':'')+'</span>';
+  }).join("");
+}
+
+/* ---- 글로벌 흐름 (금리 / 환율 / 코인) ---- */
+function renderFlow(){
+  var mode = STATE.flow, head=$("flowHead"), chart=$("flowChart"), note=$("flowNote"), title=$("flowTitle");
+  if(mode==="rate"){
+    title.textContent = "한 · 미 기준금리 추이";
+    head.innerHTML = legend([
+      {color:"#8db600", label:"한국", value:SNAP.policy.kr.rate.toFixed(2)+"%"},
+      {color:"#16161a", label:"미국(상단)", value:SNAP.policy.us.rate.toFixed(2)+"%"}
+    ]);
+    chart.innerHTML = lineChart({
+      host:"flowChart", labels: RATE_SERIES.labels, height:300,
+      series:[
+        {data:RATE_SERIES.kr, color:"#8db600", label:"한국"},
+        {data:RATE_SERIES.us, color:"#16161a", label:"미국"}
+      ],
+      min:0, fmtY:function(v){ return v.toFixed(0)+"%"; }
+    });
+    note.textContent = "금리가 오르면 대출이자와 예금이자가 함께 오르고, 주식·부동산 같은 자산에는 부담이 됩니다. 최근 5년 구간을 요약한 값입니다.";
+  }
+  else if(mode==="fx"){
+    title.textContent = "원/달러 환율";
+    var s = STATE.fxSeries;
+    if(s && s.data.length>2){
+      head.innerHTML = legend([{color:"#1f5fd0", label:"원/달러", value:nf(s.data[s.data.length-1],2)+"원"}]);
+      chart.innerHTML = lineChart({
+        host:"flowChart", labels:s.labels, height:300,
+        series:[{data:s.data, color:"#1f5fd0", fill:true}],
+        fmtY:function(v){ return nf(v,0); }
+      });
+      note.textContent = "최근 " + s.data.length + "영업일 종가입니다. 환율이 오르면(원화 약세) 수입 물가와 해외여행 비용이 오르고, 해외주식 평가액은 원화 기준으로 늘어납니다.";
+    } else {
+      head.innerHTML = legend([{color:"#1f5fd0", label:"원/달러", value:nf(STATE.fx[0].last,2)+"원"}]);
+      chart.innerHTML = '<p class="skel" style="padding:40px 0;text-align:center">환율 시계열을 불러오지 못했습니다. 현재 값은 위 카드에서 확인하세요.</p>';
+      note.textContent = "네트워크가 막혀 있으면 시계열이 표시되지 않습니다. 새로고침을 눌러 다시 시도할 수 있습니다.";
+    }
+  }
+  else {
+    title.textContent = "비트코인 30일 추이";
+    var c = STATE.cryptoSeries;
+    if(c && c.data.length>2){
+      var first=c.data[0], last=c.data[c.data.length-1], ch=(last-first)/first*100;
+      head.innerHTML = legend([{color:"#f0a35f", label:"BTC/USD", value:"$"+nf(last,0)+" ("+pct(ch,1)+")"}]);
+      chart.innerHTML = lineChart({
+        host:"flowChart", labels:c.labels, height:300,
+        series:[{data:c.data, color:"#f0a35f", fill:true}],
+        fmtY:function(v){ return "$"+nf(v/1000,0)+"k"; }
+      });
+      note.textContent = "최근 30일 일별 종가입니다. 암호화폐는 주식보다 변동이 크므로 같은 잣대로 비교하지 마세요.";
+    } else {
+      head.innerHTML = legend([{color:"#f0a35f", label:"BTC/USD", value:"$"+nf(STATE.assets[4].last,0)}]);
+      chart.innerHTML = '<p class="skel" style="padding:40px 0;text-align:center">코인 시계열을 불러오지 못했습니다.</p>';
+      note.textContent = "학교망·사내망에서는 금융 사이트 접속이 차단돼 시계열을 못 받아올 수 있습니다.";
+    }
+  }
+}
+
+/* =======================================================================
+   5. 데이터 로드 — 실패해도 스냅샷 유지
+   ======================================================================= */
+/* 중계 API — 지수·ETF·원자재·코인을 한 번에 받아온다.
+   구글 서버가 대신 호출하므로 브라우저 CORS도, 학교망 차단도 타지 않는다. */
+function loadProxy(){
+  if(!PROXY || PROXY.indexOf("http")!==0) return Promise.resolve(false);
+  return grab(PROXY+"?v=1", 25000).then(function(j){
+    if(!j || !j.ok) return false;
+    var got = [];
+
+    if(j.quotes){
+      var apply = function(list){
+        list.forEach(function(o){
+          var q = j.quotes[o.key];
+          if(q && isFinite(q.last)){
+            o.last = q.last;
+            o.prev = (q.prev!=null && isFinite(q.prev)) ? q.prev : null;
+            o.live = true;
+            if(q.date) STATE.quoteDate = q.date;
+          }
+        });
+      };
+      apply(STATE.indices);
+      apply(STATE.domestic);
+      ["US10Y","DXY"].forEach(function(k){
+        var q = j.quotes[k];
+        if(q && isFinite(q.last)){
+          STATE.rates[k] = {
+            last: q.last,
+            prev: (q.prev!=null && isFinite(q.prev)) ? q.prev : null,
+            live: true
+          };
+        }
+      });
+      /* 원자재도 같은 표에서 온다 (코인은 crypto 쪽) */
+      STATE.assets.forEach(function(a){
+        var q = j.quotes[a.key];
+        if(q && isFinite(q.last)){
+          a.last = q.last;
+          a.prev = (q.prev!=null && isFinite(q.prev)) ? q.prev : a.prev;
+          a.live = true;
+        }
+      });
+      /* ETF 카드·표 */
+      ETFS.forEach(function(e){
+        var q = j.quotes[e.t];
+        if(q && isFinite(q.last)){
+          e.price = q.last;
+          e.chg = (q.prev!=null && isFinite(q.prev)) ? q.last-q.prev : e.chg;
+          e.live = true;
+        }
+      });
+      got.push("지수·ETF·원자재: Yahoo Finance");
+    }
+
+    if(j.series){
+      STATE.proxySeries = j.series;
+      /* 6개월 상대성과를 실제 종가로 다시 계산 */
+      var labels = null;
+      ETFS.forEach(function(e){
+        var s = j.series[e.t];
+        if(s && s.close && s.close.length>5){
+          var base = s.close[0];
+          if(base>0){
+            ETF_CURVE[e.t] = s.close.map(function(v){ return (v-base)/base*100; });
+            e.ret6 = ETF_CURVE[e.t][ETF_CURVE[e.t].length-1];
+            e.mdd = maxDrawdown_(s.close);
+            labels = s.labels;
+          }
+        }
+      });
+      if(labels) STATE.etfLabels = labels;
+      got.push("6개월 시계열: Yahoo Finance");
+    }
+
+    if(j.crypto && j.crypto.prices){
+      var p = j.crypto.prices, n = 0;
+      STATE.assets.forEach(function(a){
+        var c = p[a.key];
+        if(c && isFinite(c.last)){
+          a.last = c.last;
+          a.prev = (c.prev!=null && isFinite(c.prev) && c.prev>0) ? c.prev : a.prev;
+          a.live = true; n++;
+        }
+      });
+      if(j.crypto.btc30 && j.crypto.btc30.close && j.crypto.btc30.close.length>2){
+        STATE.cryptoSeries = {labels:j.crypto.btc30.labels, data:j.crypto.btc30.close};
+      }
+      if(n) got.push("암호화폐: Yahoo Finance");
+    }
+
+    if(!got.length) return false;
+    STATE.sources = STATE.sources.concat(got.map(function(s){ return s+" (중계)"; }));
+    STATE.proxyOk = true;
+    return true;
+  });
+}
+
+function maxDrawdown_(arr){
+  var peak = arr[0], mdd = 0, i;
+  for(i=1;i<arr.length;i++){
+    if(arr[i] > peak) peak = arr[i];
+    var dd = (arr[i]-peak)/peak*100;
+    if(dd < mdd) mdd = dd;
+  }
+  return mdd;
+}
+
+/* 환율 — 시계열을 한 번에 받아 "최신 종가 vs 직전 영업일 종가"로 진짜 전일 대비를 만든다.
+   (latest만 받아 내장 스냅샷과 비교하면 며칠치 변동이 하루치인 양 표시되는 오류가 난다) */
+function loadFx(){
+  var iso = function(d){ return d.toISOString().slice(0,10); };
+  var end = new Date(), start = new Date(Date.now() - 1000*60*60*24*200);
+  var url = "https://api.frankfurter.dev/v1/"+iso(start)+".."+iso(end)+"?base=USD&symbols=KRW,JPY,EUR,CNY";
+  return grab(url, 9000).then(function(j){
+    if(j && j.rates && Object.keys(j.rates).length>=2) return {kind:"series", d:j};
+    return grab("https://open.er-api.com/v6/latest/USD").then(function(k){
+      return (k && k.rates && k.rates.KRW) ? {kind:"latest", d:k} : null;
+    });
+  }).then(function(res){
+    if(!res) return false;
+
+    if(res.kind==="latest"){
+      var r = res.d.rates;
+      var m0 = {USDKRW:r.KRW, USDJPY:r.JPY, EURUSD:r.EUR?1/r.EUR:null, USDCNY:r.CNY};
+      STATE.fx.forEach(function(o){
+        var v = m0[o.key];
+        if(v && isFinite(v)){ o.last = v; o.prev = null; o.live = true; }
+      });
+      STATE.sources.push("환율: open.er-api (전일 대비 없음)");
+      return true;
+    }
+
+    var rates = res.d.rates;
+    var days = Object.keys(rates).sort();
+    if(days.length<2) return false;
+    var cur = rates[days[days.length-1]], prv = rates[days[days.length-2]];
+    var pick = function(o, key){
+      if(key==="EURUSD") return o.EUR ? 1/o.EUR : null;
+      if(key==="USDKRW") return o.KRW;
+      if(key==="USDJPY") return o.JPY;
+      if(key==="USDCNY") return o.CNY;
+      return null;
+    };
+    STATE.fx.forEach(function(o){
+      var a = pick(cur, o.key), b = pick(prv, o.key);
+      if(a && isFinite(a)){ o.last = a; o.prev = (b && isFinite(b)) ? b : null; o.live = true; }
+    });
+    STATE.fxAsOf = days[days.length-1];
+    STATE.fxSeries = {
+      labels: days.map(function(k){ return k.slice(5).replace("-","/"); }),
+      data: days.map(function(k){ return rates[k].KRW; }).filter(function(v){ return isFinite(v); })
+    };
+    STATE.sources.push("환율: frankfurter (ECB 고시)");
+    return true;
+  });
+}
+
+/* 암호화폐 — 소스 3곳을 순서대로 시도한다. 망마다 뚫리는 곳이 다르다. */
+function loadCrypto(){
+  return grab("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,ripple&vs_currencies=usd&include_24hr_change=true", 6000).then(function(j){
+    if(j && j.bitcoin) return {src:"coingecko", d:j};
+    return grab("https://api.coincap.io/v2/assets?ids=bitcoin,ethereum,solana,xrp", 6000).then(function(c){
+      if(c && c.data && c.data.length) return {src:"coincap", d:c.data};
+      return grab("https://api.binance.com/api/v3/ticker/24hr?symbols=%5B%22BTCUSDT%22,%22ETHUSDT%22,%22SOLUSDT%22,%22XRPUSDT%22%5D", 6000).then(function(b){
+        return (b && b.length) ? {src:"binance", d:b} : null;
+      });
+    });
+  }).then(function(res){
+    if(!res) return false;
+    var map = {};
+    if(res.src==="coingecko"){
+      var g = res.d, pair = {BTC:"bitcoin", ETH:"ethereum", SOL:"solana", XRP:"ripple"};
+      Object.keys(pair).forEach(function(k){
+        var o = g[pair[k]];
+        if(o && isFinite(o.usd)) map[k] = {last:o.usd, chg:o.usd_24h_change};
+      });
+      STATE.sources.push("암호화폐: CoinGecko");
+    } else if(res.src==="coincap"){
+      var cpair = {bitcoin:"BTC", ethereum:"ETH", solana:"SOL", xrp:"XRP"};
+      res.d.forEach(function(o){
+        var k = cpair[o.id];
+        if(k) map[k] = {last:parseFloat(o.priceUsd), chg:parseFloat(o.changePercent24Hr)};
+      });
+      STATE.sources.push("암호화폐: CoinCap");
+    } else {
+      res.d.forEach(function(o){
+        var k = o.symbol.replace("USDT","");
+        map[k] = {last:parseFloat(o.lastPrice), chg:parseFloat(o.priceChangePercent)};
+      });
+      STATE.sources.push("암호화폐: Binance");
+    }
+    STATE.assets.forEach(function(a){
+      var m = map[a.key];
+      if(m && isFinite(m.last)){
+        a.last = m.last;
+        a.prev = isFinite(m.chg) && m.chg!==-100 ? m.last/(1+m.chg/100) : a.prev;
+        a.live = true;
+      }
+    });
+    return true;
+  });
+}
+
+function loadCryptoSeries(){
+  return grab("https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=30&interval=daily", 8000).then(function(j){
+    if(j && j.prices && j.prices.length>2){
+      return j.prices.map(function(p){ return {t:p[0], v:p[1]}; });
+    }
+    var end = Date.now(), start = end - 30*86400000;
+    return grab("https://api.coincap.io/v2/assets/bitcoin/history?interval=d1&start="+start+"&end="+end, 8000).then(function(c){
+      if(c && c.data && c.data.length>2){
+        return c.data.map(function(p){ return {t:p.time, v:parseFloat(p.priceUsd)}; });
+      }
+      return null;
+    });
+  }).then(function(rows){
+    if(!rows) return false;
+    STATE.cryptoSeries = {
+      labels: rows.map(function(p){ var d=new Date(p.t); return (d.getMonth()+1)+"/"+d.getDate(); }),
+      data: rows.map(function(p){ return p.v; })
+    };
+    return true;
+  });
+}
+
+function loadFng(){
+  return grab("https://api.alternative.me/fng/?limit=32").then(function(j){
+    if(!j || !j.data || !j.data.length) return false;
+    var d = j.data, cur = d[0];
+    var ko = {"Extreme Fear":"극단적 공포","Fear":"공포","Neutral":"중립","Greed":"탐욕","Extreme Greed":"극단적 탐욕"};
+    STATE.fng = {
+      value: parseInt(cur.value,10),
+      label: ko[cur.value_classification] || cur.value_classification,
+      asOf: dateStr(new Date(parseInt(cur.timestamp,10)*1000)),
+      live: true,
+      hist: [
+        {k:"1주 전",   v: d[7]  ? parseInt(d[7].value,10)  : "—"},
+        {k:"2주 전",   v: d[14] ? parseInt(d[14].value,10) : "—"},
+        {k:"1개월 전", v: d[30] ? parseInt(d[30].value,10) : "—"}
+      ]
+    };
+    STATE.sources.push("투자심리: alternative.me");
+    return true;
+  });
+}
+
+function refresh(){
+  var btn = $("btnRefresh");
+  btn.setAttribute("data-busy","1");
+  $("refIcon").outerHTML = '<span class="spin" id="refIcon"></span>';
+  STATE.sources = [];
+
+  /* 중계 API가 지수·ETF·원자재·코인을 한 번에 채운다.
+     실패하면 브라우저가 직접 부를 수 있는 것만이라도 살린다. */
+  loadProxy().catch(function(){ return false; }).then(function(proxyOk){
+    var jobs = [loadFx(), loadFng(), loadPlus()];
+    if(!proxyOk) jobs.push(loadCrypto(), loadCryptoSeries());
+    return Promise.all(jobs.map(function(p){ return p.catch(function(){ return false; }); }))
+      .then(function(res){ return {proxyOk:proxyOk, n:res.filter(Boolean).length + (proxyOk?1:0)}; });
+  }).then(function(r){
+    renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
+    renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
+    renderPlus();
+    var now = new Date();
+    $("stampTime").textContent = dateStr(now)+" "+timeStr(now);
+    $("stampSrc").textContent = r.n===0
+      ? "실시간 연결 실패 · 내장 참고값 표시 중"
+      : (r.proxyOk ? "실시간 시세 연결됨" : "일부만 실시간 (지수는 참고값)");
+    btn.removeAttribute("data-busy");
+    var ic = $("refIcon"); if(ic) ic.outerHTML = '<span id="refIcon">↻</span>';
+  });
+}
+
+function renderDataStatus(){
+  var live = STATE.sources.length;
+  var box = $("dataStatus");
+  box.innerHTML =
+    '<div class="rowline"><span>실시간 연결</span><b>'+(live?live+"개 소스":"연결 안 됨")+'</b></div>'+
+    (live ? STATE.sources.map(function(s){ return '<div class="note" style="margin:2px 0">· '+s+'</div>'; }).join("") : '')+
+    '<div class="rowline" style="margin-top:8px"><span>중계 서버</span><b>'+(STATE.proxyOk?"연결됨":"연결 안 됨")+'</b></div>'+
+    '<div class="rowline"><span>참고값 기준일</span><b>'+SNAP_DATE+'</b></div>'+
+    '<p class="note">지수 · ETF · 원자재 · 암호화폐는 <b>구글 앱스 스크립트 중계 서버</b>가 대신 받아옵니다. '+
+    '브라우저가 직접 부르면 막히는 시세를 구글 서버가 대신 가져오기 때문에, 금융 사이트를 차단하는 학교·회사 네트워크에서도 실시간으로 표시됩니다. '+
+    '시세는 10분, 암호화폐는 5분 단위로 갱신됩니다.</p>'+
+    '<p class="note">세계 지수 · 국내외 종목 · 국채 수익률 곡선도 같은 중계 서버를 거쳐 10분 단위로 갱신됩니다. '+
+    '경제 헤드라인은 <b>구글 뉴스</b> 검색 결과를 15분 단위로, 김치 프리미엄은 <b>업비트</b> 원화 시세를 3분 단위로 받아옵니다.</p>'+
+    '<p class="note">환율은 유럽중앙은행 고시(frankfurter), 투자심리 지수는 alternative.me에서 브라우저가 직접 받아옵니다. '+
+    '중계 서버가 응답하지 않으면 내장 참고값('+SNAP_DATE+' 기준)으로 표시되며, 값마다 배지로 구분됩니다.</p>'+
+    '<p class="note" style="color:var(--sub)">이 페이지는 학습·참고용입니다. 시세는 지연될 수 있으며, 실제 매매 판단에는 증권사 HTS·MTS의 정식 시세를 사용하세요.</p>';
+}
+
+/* =======================================================================
+   6. ETF 탭
+   ======================================================================= */
+function renderEtfChips(){
+  var box = $("etfChips"); box.innerHTML = "";
+  ETFS.forEach(function(e){
+    var b = el("button","chip");
+    b.type = "button";
+    b.setAttribute("aria-pressed", STATE.etfOn[e.t] ? "true" : "false");
+    b.innerHTML = '<span class="dot" style="background:'+e.color+'"></span>'+e.t+' · '+e.name;
+    b.onclick = function(){
+      var on = Object.keys(STATE.etfOn).filter(function(k){ return STATE.etfOn[k]; });
+      if(STATE.etfOn[e.t] && on.length<=1) return;
+      STATE.etfOn[e.t] = !STATE.etfOn[e.t];
+      renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
+    };
+    box.appendChild(b);
+  });
+}
+function weekLabels(n){
+  var out=[], now=new Date();
+  for(var i=n-1;i>=0;i--){
+    var d = new Date(now.getTime() - i*7*86400000);
+    out.push((d.getMonth()+1)+"/"+d.getDate());
+  }
+  return out;
+}
+function renderEtfChart(){
+  var picked = ETFS.filter(function(e){ return STATE.etfOn[e.t]; });
+  var labels = STATE.etfLabels || weekLabels(26);
+  var best=null, worst=null;
+  picked.forEach(function(e){
+    if(!best || e.ret6>best.ret6) best=e;
+    if(!worst || e.ret6<worst.ret6) worst=e;
+  });
+  $("etfRange").innerHTML = best
+    ? '최근 6개월 최고 <b>'+best.t+' '+pct(best.ret6,2)+'</b> · 최저 <b>'+worst.t+' '+pct(worst.ret6,2)+'</b>'
+    : '';
+  $("etfChart").innerHTML = lineChart({
+    host:"etfChart", labels: labels, height:320, padR:14,
+    series: picked.map(function(e){ return {data:ETF_CURVE[e.t], color:e.color, label:e.t}; }),
+    fmtY: function(v){ return (v>0?"+":"")+v.toFixed(0)+"%"; }
+  }) + '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px">' +
+       legend(picked.map(function(e){ return {color:e.color, label:e.t, value:pct(e.ret6,2)}; })) + '</div>';
+}
+function renderEtfCards(){
+  var box = $("etfCards"); box.innerHTML = "";
+  ETFS.forEach(function(e){
+    var on = STATE.etfOn[e.t];
+    var c = el("div","card quote");
+    c.style.opacity = on ? "1" : "0.45";
+    var p = (e.price-e.chg) ? e.chg/(e.price-e.chg)*100 : 0;
+    c.innerHTML =
+      '<div class="nm"><b><span class="dot" style="background:'+e.color+'"></span>'+e.t+'</b><span>'+(e.live?'<span class="badge live" style="margin-right:6px">실시간</span>':'')+e.name+'</span></div>'+
+      '<div class="val">$'+nf(e.price,2)+'</div>'+
+      '<div class="chg '+dirCls(e.chg)+'">'+(e.chg>0?"+":"")+nf(e.chg,2)+' ('+pct(p)+')</div>'+
+      '<div class="prev">전일 $'+nf(e.price-e.chg,2)+'</div>';
+    box.appendChild(c);
+  });
+}
+function renderEtfTable(){
+  var tb = $("etfTable"); tb.innerHTML = "";
+  ETFS.forEach(function(e){
+    var tr = el("tr");
+    if(!STATE.etfOn[e.t]) tr.style.opacity = "0.45";
+    tr.innerHTML =
+      '<td><span class="dot" style="background:'+e.color+'"></span><b>'+e.t+'</b></td>'+
+      '<td>$'+nf(e.price,2)+'</td>'+
+      '<td class="'+dirCls(e.ret6)+'">'+pct(e.ret6,1)+'</td>'+
+      '<td class="down">'+e.mdd.toFixed(1)+'%</td>'+
+      '<td>'+e.fee.toFixed(2)+'%</td>'+
+      '<td>'+e.div.toFixed(2)+'%</td>'+
+      '<td>'+e.aum+'</td>'+
+      '<td style="text-align:left;white-space:normal">'+e.note+'</td>';
+    tb.appendChild(tr);
+  });
+}
+
+/* =======================================================================
+   7. 대출이자 계산기
+   ======================================================================= */
+var loanType = "eqpay";
+
+function loanSchedule(P, annual, months, grace, type){
+  var r = annual/100/12, rows = [], bal = P, totalInt = 0, i, interest, principal, pay;
+  var payMonths = months - grace;
+  if(payMonths <= 0) payMonths = months, grace = 0;
+
+  var fixedPay = 0;
+  if(type==="eqpay"){
+    fixedPay = r===0 ? P/payMonths : P*r*Math.pow(1+r,payMonths)/(Math.pow(1+r,payMonths)-1);
+  }
+  for(i=1;i<=months;i++){
+    interest = bal*r;
+    if(i<=grace){ principal = 0; pay = interest; }
+    else if(type==="eqpay"){ pay = fixedPay; principal = pay-interest; if(i===months){ principal = bal; pay = principal+interest; } }
+    else if(type==="eqprin"){ principal = P/payMonths; pay = principal+interest; }
+    else { principal = (i===months)?bal:0; pay = principal+interest; }
+    if(principal>bal) principal = bal, pay = principal+interest;
+    bal -= principal; if(bal<0.5) bal = 0;
+    totalInt += interest;
+    rows.push({n:i, principal:principal, interest:interest, pay:pay, bal:bal});
+  }
+  return {rows:rows, totalInterest:totalInt, total:P+totalInt};
+}
+function monthlyPayment(P, annual, months, grace, type){
+  var s = loanSchedule(P, annual, months, grace, type);
+  var idx = Math.min(grace, months-1);
+  return s.rows[idx] ? s.rows[idx].pay : 0;
+}
+
+function calcLoan(){
+  var P = parseNum($("lnAmt").value);
+  var rate = parseNum($("lnRate").value);
+  var years = Math.max(1, Math.round(parseNum($("lnYear").value)));
+  var grace = Math.max(0, Math.round(parseNum($("lnGrace").value)));
+  var months = years*12;
+  if(grace >= months) grace = months-1;
+  if(P<=0){ P = 0; }
+
+  var s = loanSchedule(P, rate, months, grace, loanType);
+  var firstPay = s.rows[Math.min(grace, months-1)];
+  var maturity = new Date(); maturity.setMonth(maturity.getMonth()+months);
+
+  var label = loanType==="eqprin" ? "첫 달 상환액" : (loanType==="bullet" ? "매월 이자" : "월 상환액");
+  $("loanKpi").innerHTML =
+    '<div class="kpi dark"><div class="k1">'+label+'</div><div class="k2">'+money(firstPay?firstPay.pay:0)+'</div></div>'+
+    '<div class="kpi"><div class="k1">총 상환액</div><div class="k2">'+money(s.total)+'</div></div>'+
+    '<div class="kpi"><div class="k1">총 이자</div><div class="k2 up">'+money(s.totalInterest)+'</div></div>'+
+    '<div class="kpi"><div class="k1">만기</div><div class="k2">'+maturity.getFullYear()+'.'+String(maturity.getMonth()+1).padStart(2,"0")+'</div></div>';
+
+  /* 차트 */
+  var stepM = Math.max(1, Math.round(months/60));
+  var bal=[], cum=[], lbs=[], acc=0, i;
+  for(i=0;i<s.rows.length;i++){
+    acc += s.rows[i].interest;
+    if(i%stepM===0 || i===s.rows.length-1){
+      bal.push(s.rows[i].bal); cum.push(acc);
+      lbs.push(((i+1)/12).toFixed(0)+"년");
+    }
+  }
+  $("lnChart").innerHTML = lineChart({
+    host:"lnChart", labels:lbs, height:280, padL:62, padR:16,
+    series:[{data:bal, color:"#1f5fd0", fill:true},{data:cum, color:"#d92d20", fill:true}],
+    min:0, fmtY:function(v){ return v<=0 ? "0" : (v>=100000000 ? (v/100000000).toFixed(2)+"억" : nf(Math.round(v/10000))+"만"); }
+  });
+  $("lnChartNote").textContent = "만기까지 누적 이자 " + (s.totalInterest/100000000).toFixed(2) + "억원, 남은 원금은 0원으로 줄어듭니다.";
+
+  /* 표 */
+  var tb = $("lnTable"); tb.innerHTML = "";
+  var show = Math.min(s.rows.length, 360);
+  for(i=0;i<show;i++){
+    var r = s.rows[i];
+    var tr = el("tr");
+    tr.innerHTML = '<td>'+r.n+'회</td>'+
+      '<td class="down">'+money(r.principal)+'</td>'+
+      '<td class="up">'+money(r.interest)+'</td>'+
+      '<td>'+money(r.pay)+'</td>'+
+      '<td>'+money(r.bal)+'</td>';
+    tb.appendChild(tr);
+  }
+  $("lnSchedHint").textContent = "전체 "+s.rows.length+"회차 · 표 안에서 스크롤";
+
+  /* 금리 민감도 */
+  var sens = $("lnSens"); sens.innerHTML = "";
+  [-1,0,1].forEach(function(d){
+    var rr = Math.max(0, rate+d);
+    var pay = monthlyPayment(P, rr, months, grace, loanType);
+    var tr = el("tr");
+    if(d===0) tr.style.background = "var(--lime-soft)";
+    tr.innerHTML = '<td>'+rr.toFixed(2)+'%</td><td><b>'+money(pay)+'</b></td>';
+    sens.appendChild(tr);
+  });
+  var base = monthlyPayment(P, rate, months, grace, loanType);
+  var up1 = monthlyPayment(P, rate+1, months, grace, loanType);
+  $("lnSensNote").textContent = "같은 조건에서 금리가 1%p 오르면 월 상환액이 약 " + nf(Math.round((up1-base)/10000)) + "만원 늘어납니다.";
+
+  /* 비용 구성 */
+  var pRatio = s.total>0 ? P/s.total*100 : 0;
+  $("lnMix").innerHTML =
+    '<div class="mixbar"><div style="width:'+pRatio+'%;background:#1f5fd0"></div><div style="flex:1;background:#d92d20"></div></div>'+
+    '<div style="display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:10px">'+
+      '<span class="down">원금 '+pRatio.toFixed(1)+'%</span><span class="up">이자 '+(100-pRatio).toFixed(1)+'%</span></div>'+
+    '<div class="rowline"><span>대출 원금</span><b class="down">'+money(P)+'</b></div>'+
+    '<div class="rowline"><span>총 이자</span><b class="up">'+money(s.totalInterest)+'</b></div>'+
+    '<div class="rowline"><span>총 상환액</span><b>'+money(s.total)+'</b></div>'+
+    '<div class="rowline"><span>원금 대비 이자 비율</span><b>'+(P>0?(s.totalInterest/P*100).toFixed(1):"0")+'%</b></div>'+
+    '<div class="rowline"><span>상환 회차</span><b>'+s.rows.length+'회</b></div>';
+}
+
+/* =======================================================================
+   8. 복리 계산기
+   ======================================================================= */
+var cpMode = "lump";
+var CP_FREQ = [
+  {k:"연복리", n:1,   d:"1년마다 반영"},
+  {k:"반기복리", n:2, d:"6개월마다"},
+  {k:"분기복리", n:4, d:"3개월마다"},
+  {k:"월복리", n:12,  d:"매월"},
+  {k:"일복리", n:360, d:"매일(360일 기준)"}
+];
+
+function compoundSeries(init, monthly, months, annual, freqN){
+  /* 월 단위로 진행하되, 복리 반영 주기마다 이자를 붙인다 */
+  var pts = [], bal = init, principal = init, i;
+  var periodMonths = 12/freqN;
+  var periodRate = annual/100/freqN;
+  var carry = 0;
+  for(i=1;i<=months;i++){
+    if(i>1 && monthly>0){ bal += monthly; principal += monthly; }
+    carry += 1;
+    if(freqN>=12){
+      /* 월 이하 주기는 월별로 근사 반영 */
+      bal *= Math.pow(1+annual/100/freqN, freqN/12);
+      carry = 0;
+    } else if(carry >= periodMonths){
+      bal *= (1+periodRate);
+      carry -= periodMonths;
+    }
+    pts.push({m:i, bal:bal, principal:principal});
+  }
+  if(!pts.length) pts.push({m:0, bal:init, principal:init});
+  return pts;
+}
+
+function calcCompound(){
+  var init = parseNum($("cpInit").value);
+  var monthly = cpMode==="monthly" ? parseNum($("cpMonthly").value) : 0;
+  var years = Math.max(0, Math.round(parseNum($("cpYear").value)));
+  var addM = Math.max(0, Math.round(parseNum($("cpMonth").value)));
+  var months = years*12 + addM;
+  if(months<1) months = 1;
+  var rate = parseNum($("cpRate").value);
+
+  $("cpMonthlyField").hidden = (cpMode!=="monthly");
+
+  var main = compoundSeries(init, monthly, months, rate, 1);
+  var last = main[main.length-1];
+  var invested = last.principal;
+  var profit = last.bal - invested;
+
+  $("cpKpi").innerHTML =
+    '<div class="kpi"><div class="k1">최종 금액</div><div class="k2" style="color:#6f8f00">'+money(last.bal)+'</div></div>'+
+    '<div class="kpi"><div class="k1">총 투자금</div><div class="k2 down">'+money(invested)+'</div></div>'+
+    '<div class="kpi"><div class="k1">총 수익</div><div class="k2 up">'+money(profit)+'</div></div>';
+
+  var step = Math.max(1, Math.round(months/60));
+  var bal=[], pri=[], lbs=[], i;
+  for(i=0;i<main.length;i++){
+    if(i%step===0 || i===main.length-1){
+      bal.push(main[i].bal); pri.push(main[i].principal);
+      lbs.push(Math.round((i+1)/12)+"년");
+    }
+  }
+  $("cpChart").innerHTML = lineChart({
+    host:"cpChart", labels:lbs, height:300, padL:66, padR:16,
+    series:[{data:pri, color:"#1f5fd0", fill:true},{data:bal, color:"#8db600", fill:true}],
+    min:0,
+    fmtY:function(v){ return v<=0 ? "0" : (v>=100000000 ? (v/100000000).toFixed(2)+"억" : nf(Math.round(v/10000))+"만"); }
+  });
+
+  var tb = $("cpTable"); tb.innerHTML = "";
+  for(i=11;i<main.length;i+=12){
+    var p = main[i];
+    var tr = el("tr");
+    tr.innerHTML = '<td>'+Math.round((i+1)/12)+'년</td>'+
+      '<td class="down">'+money(p.principal)+'</td>'+
+      '<td style="color:#6f8f00;font-weight:700">'+money(p.bal-p.principal)+'</td>'+
+      '<td><b>'+money(p.bal)+'</b></td>';
+    tb.appendChild(tr);
+  }
+  if(!tb.children.length){
+    var p2 = main[main.length-1];
+    tb.appendChild(el("tr", null, '<td>'+months+'개월</td><td class="down">'+money(p2.principal)+'</td><td style="color:#6f8f00">'+money(p2.bal-p2.principal)+'</td><td><b>'+money(p2.bal)+'</b></td>'));
+  }
+
+  var results = CP_FREQ.map(function(f){
+    var s = compoundSeries(init, monthly, months, rate, f.n);
+    return {k:f.k, d:f.d, v:s[s.length-1].bal};
+  });
+  var mx = Math.max.apply(null, results.map(function(r){ return r.v; }));
+  var mn = Math.min.apply(null, results.map(function(r){ return r.v; }));
+  $("cpFreq").innerHTML = results.map(function(r){
+    var w = mx>mn ? 20 + (r.v-mn)/(mx-mn)*80 : 100;
+    return '<div style="margin-bottom:11px">'+
+      '<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:5px">'+
+        '<span>'+r.k+' <em style="font-style:normal;color:var(--dim);font-weight:500;font-size:11.5px">'+r.d+'</em></span>'+
+        '<span style="color:#6f8f00">'+money(r.v)+'</span></div>'+
+      '<div style="height:6px;border-radius:999px;background:#f0f0ec"><div style="width:'+w.toFixed(1)+'%;height:100%;border-radius:999px;background:var(--lime-d)"></div></div>'+
+      '</div>';
+  }).join("");
+}
+
+/* =======================================================================
+   8-2. 환율 계산 · 예적금 · 72의 법칙 · 물가
+   ======================================================================= */
+var FX_CUR = [
+  {code:"USD", name:"미국 달러", sym:"$",  key:"USDKRW"},
+  {code:"JPY", name:"일본 엔",   sym:"¥",  key:"USDJPY", per100:true},
+  {code:"EUR", name:"유로",     sym:"€",  key:"EURUSD"},
+  {code:"CNY", name:"중국 위안", sym:"¥",  key:"USDCNY"}
+];
+var fxCurCode = "USD", fxDir = "krw2f";
+var TAX = 0.154;   // 이자소득세 15.4% (소득세 14% + 지방소득세 1.4%)
+
+/** 1단위 외화당 원화 값 */
+function krwPer(code){
+  var find = function(k){
+    var o = null;
+    STATE.fx.forEach(function(x){ if(x.key===k) o = x; });
+    return o;
+  };
+  var usdkrw = find("USDKRW");
+  if(!usdkrw || !isFinite(usdkrw.last)) return null;
+  if(code==="USD") return usdkrw.last;
+  if(code==="JPY"){ var j = find("USDJPY"); return (j && j.last) ? usdkrw.last/j.last : null; }
+  if(code==="EUR"){ var e = find("EURUSD"); return (e && e.last) ? usdkrw.last*e.last : null; }
+  if(code==="CNY"){ var c = find("USDCNY"); return (c && c.last) ? usdkrw.last/c.last : null; }
+  return null;
+}
+
+function renderFxCur(){
+  var box = $("fxCur"); box.innerHTML = "";
+  FX_CUR.forEach(function(c){
+    var b = el("button","chip");
+    b.type = "button";
+    b.setAttribute("aria-pressed", c.code===fxCurCode ? "true":"false");
+    b.textContent = c.code + " · " + c.name;
+    b.onclick = function(){ fxCurCode = c.code; renderFxCur(); calcFx(); };
+    box.appendChild(b);
+  });
+}
+
+function calcFx(){
+  var amt = parseNum($("fxAmt").value);
+  var cur = FX_CUR.filter(function(c){ return c.code===fxCurCode; })[0];
+  var rate = krwPer(fxCurCode);
+  var live = STATE.fx.some(function(o){ return o.live; });
+  $("fxCalcBadge").textContent = live ? "실시간 환율" : "참고 환율";
+  $("fxCalcBadge").className = "badge" + (live ? " live" : "");
+  $("fxFromUnit").textContent = (fxDir==="krw2f") ? "원" : cur.code;
+
+  if(!rate){
+    $("fxResult").innerHTML = '<p class="skel">환율을 불러오지 못했습니다.</p>';
+    return;
+  }
+  var out, unit, sub;
+  if(fxDir==="krw2f"){
+    out = amt / rate; unit = cur.code;
+    sub = "1 "+cur.code+" = "+nf(rate,2)+"원";
+  } else {
+    out = amt * rate; unit = "원";
+    sub = "1 "+cur.code+" = "+nf(rate,2)+"원";
+  }
+  var dg = (unit==="원") ? 0 : (out>=100 ? 2 : 4);
+  $("fxResult").innerHTML =
+    '<div class="kpi dark"><div class="k1">환전하면</div>'+
+    '<div class="k2">'+nf(out,dg)+' <span style="font-size:15px">'+unit+'</span></div></div>'+
+    '<div class="rowline" style="margin-top:12px"><span>적용 환율</span><b>'+sub+'</b></div>'+
+    (fxCurCode==="JPY" ? '<div class="rowline"><span>100엔 기준</span><b>'+nf(rate*100,2)+'원</b></div>' : '')+
+    '<div class="rowline"><span>환전 수수료 1.75% 가정</span><b>'+
+      (fxDir==="krw2f" ? nf(out*(1-0.0175),dg)+' '+unit : nf(out*(1-0.0175),dg)+' '+unit)+'</b></div>';
+}
+
+var dpMode = "deposit", dpType = "simple";
+function calcDeposit(){
+  var P = parseNum($("dpAmt").value);
+  var rate = parseNum($("dpRate").value);
+  var months = Math.max(1, Math.round(parseNum($("dpMonth").value)));
+  var r = rate/100/12;
+  var principal, interest;
+
+  $("dpAmtLabel").textContent = (dpMode==="deposit") ? "예치 금액" : "매달 넣는 금액";
+
+  if(dpMode==="deposit"){
+    principal = P;
+    interest = (dpType==="simple") ? P*r*months : P*(Math.pow(1+r,months)-1);
+  } else {
+    principal = P*months;
+    if(dpType==="simple"){
+      /* 단리 적금: n회차 납입금은 (months-n+1)개월치 이자 */
+      interest = P*r*months*(months+1)/2;
+    } else {
+      var bal = 0;
+      for(var i=0;i<months;i++){ bal = (bal+P)*(1+r); }
+      interest = bal - principal;
+    }
+  }
+  var tax = interest*TAX;
+  var net = principal + interest - tax;
+  var effective = principal>0 ? (interest-tax)/principal*100 : 0;
+
+  $("dpResult").innerHTML =
+    '<div class="kpi dark"><div class="k1">세후 수령액</div><div class="k2">'+money(net)+'</div></div>'+
+    '<div class="rowline" style="margin-top:12px"><span>납입 원금</span><b class="down">'+money(principal)+'</b></div>'+
+    '<div class="rowline"><span>세전 이자</span><b class="up">'+money(interest)+'</b></div>'+
+    '<div class="rowline"><span>이자소득세 15.4%</span><b style="color:var(--sub)">− '+money(tax)+'</b></div>'+
+    '<div class="rowline"><span>세후 이자</span><b class="up">'+money(interest-tax)+'</b></div>'+
+    '<div class="rowline"><span>원금 대비 세후 수익률</span><b>'+nf(effective,2)+'%</b></div>'+
+    (dpMode==="saving"
+      ? '<p class="note">적금은 매달 넣은 돈이 만기까지 남은 기간만큼만 이자가 붙습니다. 그래서 "연 '+nf(rate,2)+'%"라도 실제 수익률은 절반 수준으로 보입니다 — 잘못된 것이 아니라 원래 그렇습니다.</p>'
+      : '<p class="note">예금은 맡긴 돈 전액에 기간 내내 이자가 붙습니다.</p>');
+}
+
+function calcRule72(){
+  var r = parseNum($("ruleRate").value);
+  if(r<=0){ $("ruleOut").innerHTML = '<p class="skel">0보다 큰 수익률을 넣어주세요.</p>'; return; }
+  var rough = 72/r;
+  var exact = Math.log(2)/Math.log(1+r/100);
+  var quad = Math.log(4)/Math.log(1+r/100);
+  $("ruleOut").innerHTML =
+    '<div class="kpi dark"><div class="k1">원금이 2배 되는 기간</div><div class="k2">약 '+nf(rough,1)+'년</div></div>'+
+    '<div class="rowline" style="margin-top:12px"><span>정확히 계산하면</span><b>'+nf(exact,1)+'년</b></div>'+
+    '<div class="rowline"><span>4배가 되는 기간</span><b>'+nf(quad,1)+'년</b></div>'+
+    '<div class="rowline"><span>10년 뒤 배수</span><b>'+nf(Math.pow(1+r/100,10),2)+'배</b></div>'+
+    '<div class="rowline"><span>30년 뒤 배수</span><b>'+nf(Math.pow(1+r/100,30),2)+'배</b></div>';
+}
+
+function calcInflation(){
+  var amt = parseNum($("infAmt").value);
+  var rate = parseNum($("infRate").value);
+  var years = Math.max(1, Math.round(parseNum($("infYear").value)));
+  var real = amt/Math.pow(1+rate/100, years);
+  var needed = amt*Math.pow(1+rate/100, years);
+  var lost = amt-real;
+  $("infOut").innerHTML =
+    '<div class="kpi dark"><div class="k1">'+years+'년 뒤 실질 가치</div><div class="k2">'+money(real)+'</div></div>'+
+    '<div class="rowline" style="margin-top:12px"><span>구매력 감소분</span><b class="up">− '+money(lost)+' ('+nf(lost/amt*100,1)+'%)</b></div>'+
+    '<div class="rowline"><span>같은 물건을 사려면</span><b>'+money(needed)+'</b></div>'+
+    '<div class="rowline"><span>본전을 지키는 최소 수익률</span><b>연 '+nf(rate,2)+'%</b></div>';
+}
+
+/* =======================================================================
+   9. 용어·자료
+   ======================================================================= */
+var GLOSSARY = [
+  ["기준금리","중앙은행이 정하는 돈의 기본 값입니다. 이 금리가 오르면 은행 대출·예금 금리가 따라 오르고, 빚을 내어 굴리던 자산(주식·부동산)에는 부담이 됩니다. 한국은행은 연 8회, 미국 연준(Fed)은 연 8회 회의에서 결정합니다."],
+  ["한미 금리차","미국 금리가 한국보다 높으면 더 높은 이자를 좇아 자금이 미국으로 빠져나가기 쉽고, 그만큼 원화 가치가 약해질(환율이 오를) 압력이 생깁니다. 다만 금리차 하나로 환율이 정해지지는 않습니다."],
+  ["환율(원/달러)","1달러를 사는 데 필요한 원화입니다. 숫자가 오르면 원화 약세 — 수입품·해외여행 비용이 오르고, 해외 주식을 가진 사람은 원화 환산 평가액이 늘어납니다."],
+  ["S&P 500 / 나스닥 100 / 다우","각각 미국 대형주 500개, 나스닥 대표 100개, 우량주 30개를 묶은 지수입니다. 시장 전체 분위기를 볼 때는 S&P 500, 기술주 쏠림을 볼 때는 나스닥을 봅니다."],
+  ["필라델피아 반도체 지수(SOX)","반도체 기업만 모은 지수입니다. 경기 흐름에 먼저 반응하는 편이라 등락 폭이 크고, 국내 반도체주와도 같이 움직이는 경향이 있습니다."],
+  ["VIX(변동성 지수)","앞으로 30일간 시장이 얼마나 출렁일지에 대한 기대치입니다. 보통 20 아래면 안정, 30을 넘으면 불안이 큰 국면으로 읽습니다. 흔히 '공포지수'라 부릅니다."],
+  ["공포·탐욕 지수","시장 참여자의 심리를 0~100으로 나타낸 지표입니다. 낮으면 겁먹은 상태, 높으면 과열입니다. 이 페이지에 실시간으로 뜨는 값은 암호화폐 시장 기준입니다."],
+  ["ETF","여러 종목을 한 바구니에 담아 주식처럼 사고파는 상품입니다. 한 종목만 사는 것보다 위험이 분산되지만, 그 바구니가 담고 있는 업종이 무너지면 함께 내려갑니다."],
+  ["운용보수","ETF·펀드를 굴려주는 대가로 매년 떼는 비용입니다. 0.03%와 0.35%는 작아 보여도 20~30년이 쌓이면 최종 금액에서 큰 차이를 만듭니다."],
+  ["최대 낙폭(MDD)","해당 기간 고점에서 저점까지 떨어진 폭입니다. 수익률만 보지 말고 이 숫자를 함께 봐야 '내가 버틸 수 있는 상품인가'를 가늠할 수 있습니다."],
+  ["원리금균등 상환","매달 내는 돈이 똑같은 방식입니다. 초반에는 이자 비중이 크고 갈수록 원금 비중이 커집니다. 매달 지출을 고정하고 싶을 때 씁니다."],
+  ["원금균등 상환","매달 갚는 원금이 같아 초반 부담이 크고 갈수록 줄어듭니다. 총 이자는 원리금균등보다 적습니다."],
+  ["거치기간","원금은 그대로 두고 이자만 내는 기간입니다. 당장 부담은 줄지만 원금이 줄지 않아 총 이자는 늘어납니다."],
+  ["복리","이자가 원금에 붙고, 그 이자에 또 이자가 붙는 구조입니다. 기간이 길수록 위력이 커집니다. 반대로 대출에서는 그 위력이 나에게 불리하게 작동합니다."],
+  ["국채 수익률 곡선","만기가 다른 국채 금리를 짧은 순서대로 이은 선입니다. 보통 오래 빌려줄수록 이자를 더 받으므로 오른쪽으로 올라갑니다. 이 곡선이 주택담보대출·회사채 등 시중 금리의 바탕이 됩니다."],
+  ["장단기 금리차(역전)","10년물에서 3개월물을 뺀 값입니다. 마이너스가 되면 '금리 역전'이라 부르며, 과거 미국의 경기 침체에 앞서 자주 나타났습니다. 다만 역전이 곧 침체는 아니고 시차도 1~2년으로 들쭉날쭉했습니다."],
+  ["김치 프리미엄","국내 거래소의 코인 가격이 해외 시세(달러가 × 환율)보다 비싼 정도입니다. 플러스면 국내가 비싼 상태, 마이너스면 싼 상태(역프리미엄)입니다. 국경을 넘는 송금이 자유롭지 않아 생기는 차이라 쉽게 사라지지 않습니다."],
+  ["달러인덱스(DXY)","유로·엔 등 주요 6개 통화 대비 달러의 힘을 100 기준으로 나타낸 값입니다. 이 값이 오르면 달러 강세라, 원/달러 환율도 함께 오르는 경우가 많습니다."],
+  ["국내 상장 해외 ETF","한국거래소에서 원화로 사는 미국지수 ETF입니다. 환전 없이 살 수 있어 편하지만, 매매차익이 배당소득으로 15.4% 과세되고 금융소득종합과세에 합산되는 점이 미국 상장 ETF와 다릅니다."]
+];
+var SOURCES = [
+  ["한국은행 경제통계시스템","기준금리·환율·물가 등 공식 통계","https://ecos.bok.or.kr"],
+  ["한국거래소 정보데이터시스템","코스피·코스닥 지수와 상장 종목 시세","http://data.krx.co.kr"],
+  ["금융감독원 전자공시(DART)","기업 실적·공모주 증권신고서 원문","https://dart.fss.or.kr"],
+  ["미국 연준 경제데이터(FRED)","미국 금리·고용·물가 시계열","https://fred.stlouisfed.org"],
+  ["CNN 공포·탐욕 지수","미국 주식시장 투자심리","https://edition.cnn.com/markets/fear-and-greed"],
+  ["금융투자협회 채권정보","국고채·회사채 금리","https://www.kofiabond.or.kr"],
+  ["e-나라지표","국가 주요 경제지표 모음","https://www.index.go.kr"],
+  ["미국 재무부 금리 곡선","만기별 국채 수익률 공식 고시값","https://home.treasury.gov/resource-center/data-chart-center/interest-rates"],
+  ["업비트","국내 암호화폐 원화 시세","https://upbit.com/exchange"],
+  ["구글 뉴스 · 경제","증시·금리·환율 기사 모아보기","https://news.google.com/search?q=%EC%A6%9D%EC%8B%9C&hl=ko&gl=KR&ceid=KR:ko"]
+];
+/* 세금 — 어디에 투자하느냐에 따라 세금 구조가 통째로 달라진다.
+   수치는 2026년 기준이며, 세법은 바뀌므로 큰 금액은 반드시 국세청·세무사에게 확인. */
+var TAX_ROWS = [
+  ["국내 주식", "없음 <span class=\"dim\">(소액주주)</span>", "15.4%", "매도 시 0.20%"],
+  ["해외 주식", "22% <span class=\"dim\">(250만원 공제 후)</span>", "15.4%", "없음"],
+  ["국내 상장 해외 ETF", "15.4% <span class=\"dim\">(배당소득으로)</span>", "15.4%", "없음"],
+  ["해외 상장 ETF", "22% <span class=\"dim\">(250만원 공제 후)</span>", "15.4%", "없음"],
+  ["예금 · 적금", "—", "15.4%", "없음"]
+];
+var TAX_NOTES = [
+  ["같은 S&P500이라도 세금이 다릅니다",
+   "국내에 상장된 미국지수 ETF(TIGER·KODEX 등)는 매매차익이 <b>배당소득</b>으로 15.4% 과세되고 금융소득종합과세에 합산됩니다. 미국에 상장된 ETF(VOO·QQQ 등)는 <b>양도소득</b>으로 250만원 공제 후 22%지만 종합과세에는 합산되지 않습니다. 수익이 크고 다른 금융소득이 많다면 후자가, 수익이 250만원 안쪽이면 전자가 불리할 수 있습니다."],
+  ["금융소득종합과세 2,000만원",
+   "이자와 배당을 합쳐 연 2,000만원을 넘으면 초과분이 다른 소득과 합산돼 최고 49.5%까지 누진 적용됩니다. 해외주식 <b>양도차익</b>은 여기 포함되지 않습니다."],
+  ["해외주식은 5월에 직접 신고",
+   "전년도 양도차익을 이듬해 5월 1~31일에 신고·납부합니다. 원천징수가 아니라 <b>본인이 신고</b>해야 하며, 증권사 대행 서비스를 쓰는 경우가 많습니다. 손실 난 종목을 같은 해에 함께 팔면 이익과 상계됩니다."],
+  ["ISA 계좌",
+   "일반형 200만원 · 서민형 400만원까지 비과세, 초과분은 9%(지방세 포함 9.9%) 분리과세됩니다. 연 납입한도 4,000만원, 총 2억원, 의무가입 3년입니다."],
+  ["폐지·유예된 것",
+   "금융투자소득세(금투세)는 2024년 12월 소득세법 개정으로 <b>폐지</b>됐습니다. 가상자산 과세는 2027년으로 미뤄졌습니다."],
+  ["2026년에 바뀐 것",
+   "증권거래세가 인상됐습니다. 코스피는 거래세 0.05% + 농어촌특별세 0.15%로 합계 0.20%, 코스닥도 0.20%입니다. 매도할 때만 내며, 이익이 나지 않아도 부과됩니다."]
+];
+
+function renderTax(){
+  var t = $("taxTable");
+  var narrow = (window.innerWidth || 1200) <= 620;
+
+  if(narrow){
+    /* 좁은 화면에서 4열 표는 가로로 넘친다 — 대상별 블록으로 바꾼다 */
+    t.outerHTML = '<div id="taxTable" class="taxcards">' +
+      TAX_ROWS.map(function(r){
+        return '<div class="taxcard"><div class="tc-h">'+r[0]+'</div>'+
+          '<div class="tc-r"><span>매매차익</span><b>'+r[1]+'</b></div>'+
+          '<div class="tc-r"><span>배당 · 분배금</span><b>'+r[2]+'</b></div>'+
+          '<div class="tc-r"><span>증권거래세</span><b>'+r[3]+'</b></div></div>';
+      }).join("") + '</div>';
+  } else {
+    t.outerHTML =
+      '<table id="taxTable"><thead><tr><th>대상</th><th>매매차익</th><th>배당 · 분배금</th><th>증권거래세</th></tr></thead><tbody>'+
+      TAX_ROWS.map(function(r){
+        return '<tr><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>';
+      }).join("")+'</tbody></table>';
+  }
+  $("taxNotes").innerHTML =
+    '<div class="glossary">'+
+    TAX_NOTES.map(function(n){
+      return '<details><summary>'+n[0]+'</summary><p>'+n[1]+'</p></details>';
+    }).join("")+'</div>'+
+    '<p class="note">세율은 지방소득세를 포함한 값입니다(예: 배당소득세 14% + 지방소득세 1.4% = 15.4%). '+
+    '세법은 자주 바뀌고 개인 상황에 따라 달라지므로, 금액이 큰 결정은 국세청 상담(126) 또는 세무사에게 확인하세요.</p>';
+}
+
+/* ---- 세금 계산기 ----
+   해외주식 양도세: (양도차익 − 250만원) × 22%
+   배당소득세: 배당금 × 15.4% 원천징수
+   국내주식 매도: 증권거래세 0.20% (2026년), 소액주주 양도세 없음 */
+var txMode = "oversea";
+var DEDUCT = 2500000, RATE_TRANSFER = 0.22, RATE_DIV = 0.154, RATE_STT = 0.0020;
+
+function txField(id, label, val, unit, note){
+  return '<div class="field"><label for="'+id+'">'+label+'</label>'+
+    '<div class="inp"><input id="'+id+'" inputmode="numeric" value="'+val+'"><span>'+unit+'</span></div>'+
+    (note ? '<p class="note" style="margin-top:6px">'+note+'</p>' : '')+'</div>';
+}
+
+function renderTxForm(){
+  var f = $("txForm");
+  if(txMode==="oversea"){
+    f.innerHTML =
+      txField("txBuy","산 금액 (총 매수)","20,000,000","원") +
+      txField("txSell","판 금액 (총 매도)","28,000,000","원") +
+      txField("txLoss","같은 해에 확정한 손실","0","원","손실 난 종목을 같은 해에 팔면 이익과 상계됩니다.");
+    ["txBuy","txSell","txLoss"].forEach(function(id){ bindNumberInput(id, calcTax, true); });
+  } else if(txMode==="dividend"){
+    f.innerHTML =
+      txField("txDiv","받을 배당금 (세전)","3,000,000","원") +
+      txField("txOther","올해 다른 이자 · 배당 소득","0","원","이자와 배당을 합쳐 연 2,000만원을 넘으면 종합과세 대상이 됩니다.");
+    ["txDiv","txOther"].forEach(function(id){ bindNumberInput(id, calcTax, true); });
+  } else {
+    f.innerHTML =
+      txField("txSellKr","매도 금액","10,000,000","원","국내 주식은 소액주주라면 양도차익에 세금이 없고, 팔 때 거래세만 냅니다.");
+    bindNumberInput("txSellKr", calcTax, true);
+  }
+  calcTax();
+}
+
+function calcTax(){
+  var box = $("txResult");
+
+  if(txMode==="oversea"){
+    var buy = parseNum($("txBuy").value), sell = parseNum($("txSell").value), loss = parseNum($("txLoss").value);
+    var gain = sell - buy - loss;
+    var base = Math.max(0, gain - DEDUCT);
+    var tax = base * RATE_TRANSFER;
+    var net = gain - tax;
+    box.innerHTML =
+      '<div class="kpi dark"><div class="k1">낼 세금</div><div class="k2">'+money(tax)+'</div></div>'+
+      '<div class="rowline" style="margin-top:12px"><span>양도차익</span><b class="'+(gain>=0?"up":"down")+'">'+money(gain)+'</b></div>'+
+      '<div class="rowline"><span>기본공제</span><b style="color:var(--sub)">− '+money(Math.min(DEDUCT, Math.max(0,gain)))+'</b></div>'+
+      '<div class="rowline"><span>과세표준</span><b>'+money(base)+'</b></div>'+
+      '<div class="rowline"><span>세율</span><b>22% <span class="dim">(양도세 20% + 지방세 2%)</span></b></div>'+
+      '<div class="rowline"><span>세금 뗀 뒤 남는 돈</span><b>'+money(net)+'</b></div>'+
+      (gain <= 0
+        ? '<p class="note">손실이거나 이익이 없으면 낼 세금은 없습니다. 다만 <b>손실도 신고해 두면</b> 기록이 남습니다.</p>'
+        : (base === 0
+          ? '<p class="note">양도차익이 기본공제 250만원 안쪽이라 낼 세금이 없습니다. 해마다 공제가 새로 생기므로, 이익 실현을 여러 해에 나누면 세금을 줄일 수 있습니다.</p>'
+          : '<p class="note">이듬해 5월 1~31일에 직접 신고·납부합니다. 손실 난 종목을 같은 해에 함께 팔면 과세 대상 이익이 줄어듭니다.</p>'));
+
+  } else if(txMode==="dividend"){
+    var div = parseNum($("txDiv").value), other = parseNum($("txOther").value);
+    var tax2 = div * RATE_DIV;
+    var total = div + other;
+    var over = total > 20000000;
+    box.innerHTML =
+      '<div class="kpi dark"><div class="k1">실제로 받는 돈</div><div class="k2">'+money(div - tax2)+'</div></div>'+
+      '<div class="rowline" style="margin-top:12px"><span>세전 배당금</span><b>'+money(div)+'</b></div>'+
+      '<div class="rowline"><span>배당소득세 15.4%</span><b class="up">− '+money(tax2)+'</b></div>'+
+      '<div class="rowline"><span>올해 이자 · 배당 합계</span><b>'+money(total)+'</b></div>'+
+      (over
+        ? '<div class="rowline"><span>금융소득종합과세</span><b class="up">대상</b></div>'+
+          '<p class="note">이자·배당 합계가 2,000만원을 넘었습니다. 초과분 '+money(total-20000000)+'이 다른 소득과 합산돼 누진세율(최고 49.5%)이 적용됩니다. 배당 시기를 나누거나 ISA·연금계좌를 쓰면 부담을 줄일 수 있습니다.</p>'
+        : '<div class="rowline"><span>금융소득종합과세</span><b>해당 없음</b></div>'+
+          '<p class="note">2,000만원까지 '+money(20000000-total)+' 남았습니다. 넘지 않으면 15.4% 원천징수로 끝납니다.</p>');
+
+  } else {
+    var sellKr = parseNum($("txSellKr").value);
+    var stt = sellKr * RATE_STT;
+    box.innerHTML =
+      '<div class="kpi dark"><div class="k1">증권거래세</div><div class="k2">'+money(stt)+'</div></div>'+
+      '<div class="rowline" style="margin-top:12px"><span>매도 금액</span><b>'+money(sellKr)+'</b></div>'+
+      '<div class="rowline"><span>거래세 0.20%</span><b class="up">− '+money(stt)+'</b></div>'+
+      '<div class="rowline"><span>양도소득세</span><b>없음 <span class="dim">(소액주주)</span></b></div>'+
+      '<div class="rowline"><span>손에 쥐는 금액</span><b>'+money(sellKr - stt)+'</b></div>'+
+      '<p class="note">2026년부터 코스피는 거래세 0.05% + 농어촌특별세 0.15%로 합계 0.20%, 코스닥도 0.20%입니다. '+
+      '<b>이익이 나지 않아도</b> 팔면 부과되므로 잦은 매매는 그 자체로 비용입니다. 증권사 매매수수료는 여기에 별도로 붙습니다.</p>';
+  }
+}
+
+function renderLearn(){
+  renderTax();
+  $("glossary").innerHTML = GLOSSARY.map(function(g){
+    return '<details><summary>'+g[0]+'</summary><p>'+g[1]+'</p></details>';
+  }).join("");
+  $("srcLinks").innerHTML = SOURCES.map(function(s){
+    return '<div class="linkrow"><div><div class="lt">'+s[0]+'</div><div class="ld">'+s[1]+'</div></div>'+
+           '<a href="'+s[2]+'" target="_blank" rel="noopener noreferrer">바로가기</a></div>';
+  }).join("");
+}
+
+/* =======================================================================
+   9-b. 확장 데이터 — 세계증시 · 금리커브 · 종목 · 뉴스 · 김치 프리미엄
+        (중계 서버의 ?only=plus 응답 하나로 모두 채운다)
+   ======================================================================= */
+var WORLD_ASIA = [
+  {key:"HSI",    name:"항셍",       sub:"홍콩"},
+  {key:"SHCOMP", name:"상해종합",   sub:"중국"},
+  {key:"TWII",   name:"대만 가권",  sub:"대만"},
+  {key:"NIFTY",  name:"니프티 50",  sub:"인도"}
+];
+var WORLD_EU = [
+  {key:"DAX",   name:"DAX",           sub:"독일"},
+  {key:"FTSE",  name:"FTSE 100",      sub:"영국"},
+  {key:"CAC",   name:"CAC 40",        sub:"프랑스"},
+  {key:"STOXX", name:"유로스톡스 50", sub:"유로존"}
+];
+var US_STOCKS = [
+  {key:"NVDA",  t:"NVDA",  name:"엔비디아",     note:"AI 반도체"},
+  {key:"AAPL",  t:"AAPL",  name:"애플",         note:"스마트폰 · 서비스"},
+  {key:"MSFT",  t:"MSFT",  name:"마이크로소프트", note:"클라우드 · 소프트웨어"},
+  {key:"GOOGL", t:"GOOGL", name:"알파벳",       note:"검색 · 광고"},
+  {key:"AMZN",  t:"AMZN",  name:"아마존",       note:"전자상거래 · 클라우드"},
+  {key:"META",  t:"META",  name:"메타",         note:"소셜 · 광고"},
+  {key:"TSLA",  t:"TSLA",  name:"테슬라",       note:"전기차"},
+  {key:"AVGO",  t:"AVGO",  name:"브로드컴",     note:"통신 반도체"}
+];
+var KR_STOCKS = [
+  {key:"K005930", t:"005930", name:"삼성전자",         note:"반도체 · 전자"},
+  {key:"K000660", t:"000660", name:"SK하이닉스",       note:"메모리 · HBM"},
+  {key:"K373220", t:"373220", name:"LG에너지솔루션",   note:"2차전지"},
+  {key:"K207940", t:"207940", name:"삼성바이오로직스", note:"바이오 위탁생산"},
+  {key:"K005380", t:"005380", name:"현대차",           note:"완성차"},
+  {key:"K000270", t:"000270", name:"기아",             note:"완성차"},
+  {key:"K035420", t:"035420", name:"NAVER",            note:"인터넷 플랫폼"},
+  {key:"K068270", t:"068270", name:"셀트리온",         note:"바이오시밀러"}
+];
+var KR_ETFS = [
+  {key:"K069500", t:"069500", name:"KODEX 200",          note:"코스피200 — 국내 대형주"},
+  {key:"K360750", t:"360750", name:"TIGER 미국S&P500",   note:"S&P 500 — 원화로 매수"},
+  {key:"K133690", t:"133690", name:"TIGER 미국나스닥100", note:"나스닥 100 — 원화로 매수"},
+  {key:"K379800", t:"379800", name:"KODEX 미국S&P500",   note:"S&P 500 — 원화로 매수"}
+];
+var COIN_KO = {BTC:"비트코인", ETH:"이더리움", XRP:"리플", SOL:"솔라나", DOGE:"도지코인"};
+
+function esc(s){
+  return String(s==null ? "" : s)
+    .split("&").join("&amp;")
+    .split("<").join("&lt;")
+    .split(">").join("&gt;")
+    .split('"').join("&quot;");
+}
+function timeAgo(iso){
+  if(!iso) return "";
+  var t = Date.parse(iso);
+  if(!isFinite(t)) return "";
+  var m = Math.floor((Date.now()-t)/60000);
+  if(m < 1) return "방금";
+  if(m < 60) return m+"분 전";
+  var h = Math.floor(m/60);
+  if(h < 24) return h+"시간 전";
+  var d = Math.floor(h/24);
+  if(d < 7) return d+"일 전";
+  return dateStr(new Date(t));
+}
+/* 확장 시세 한 건 꺼내기 */
+function xq(key){
+  var q = (STATE.extra && STATE.extra.quotes) ? STATE.extra.quotes[key] : null;
+  return (q && isFinite(q.last)) ? q : null;
+}
+
+/* ---- 세계 증시 카드 ---- */
+function worldCard(o){
+  var c = el("div","card quote");
+  var q = xq(o.key);
+  if(!q){
+    c.innerHTML =
+      '<div class="nm"><b>'+o.name+'</b><span>'+o.sub+'</span></div>'+
+      '<div class="val" style="font-size:19px;color:var(--dim)">—</div>'+
+      '<div class="prev">중계 서버에 연결되면 표시됩니다</div>';
+    return c;
+  }
+  var has = (q.prev!=null && isFinite(q.prev) && q.prev>0);
+  var d = has ? q.last-q.prev : 0, p = has ? d/q.prev*100 : 0;
+  c.innerHTML =
+    '<div class="nm"><b>'+o.name+'</b><span><span class="badge live" style="margin-right:6px">실시간</span>'+o.sub+'</span></div>'+
+    '<div class="val">'+nf(q.last,2)+'</div>'+
+    '<div class="prev">'+(has ? '전일 '+nf(q.prev,2) : '&nbsp;')+'</div>'+
+    (has
+      ? '<div class="chg '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,2)+' ('+pct(p)+') '+(d>0?"상승":(d<0?"하락":"보합"))+'</div>'
+      : '<div class="chg flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div>');
+  return c;
+}
+function renderWorld(){
+  var a = $("asiaGrid"), e = $("euroGrid");
+  a.innerHTML = ""; e.innerHTML = "";
+  WORLD_ASIA.forEach(function(o){ a.appendChild(worldCard(o)); });
+  WORLD_EU.forEach(function(o){ e.appendChild(worldCard(o)); });
+  $("worldAsOf").textContent = STATE.extra
+    ? "실시간 · "+(STATE.extraDate || "최근 종가 기준")
+    : "중계 서버 연결 대기";
+}
+
+/* ---- 종목 표 ---- */
+function stockTable(tbodyId, list, krw){
+  var tb = $(tbodyId);
+  if(!tb) return;
+  tb.innerHTML = "";
+  list.forEach(function(o){
+    var q = xq(o.key), tr = el("tr");
+    if(!q){
+      tr.innerHTML = '<td><b>'+o.name+'</b><div class="dim">'+o.t+'</div></td>'+
+        '<td colspan="3" style="color:var(--dim)">불러오지 못함</td>'+
+        '<td style="text-align:left;color:var(--sub)">'+o.note+'</td>';
+      tb.appendChild(tr); return;
+    }
+    var has = (q.prev!=null && isFinite(q.prev) && q.prev>0);
+    var d = has ? q.last-q.prev : 0, p = has ? d/q.prev*100 : 0;
+    var f = function(v){ return krw ? nf(v,0)+"원" : "$"+nf(v,2); };
+    var fd = function(v){ return (v>0?"+":"")+(krw ? nf(v,0) : nf(v,2)); };
+    tr.innerHTML =
+      '<td><b>'+o.name+'</b><div class="dim">'+o.t+'</div></td>'+
+      '<td>'+f(q.last)+'</td>'+
+      '<td class="'+dirCls(d)+'">'+(has ? fd(d) : "—")+'</td>'+
+      '<td class="'+dirCls(d)+'"><b>'+(has ? pct(p) : "—")+'</b></td>'+
+      '<td style="text-align:left;color:var(--sub)">'+o.note+'</td>';
+    tb.appendChild(tr);
+  });
+}
+function renderStocks(){
+  stockTable("usTable", US_STOCKS, false);
+  stockTable("krTable", KR_STOCKS, true);
+  stockTable("krEtfTable", KR_ETFS, true);
+  var d = STATE.extraDate;
+  if($("usStockAsOf")) $("usStockAsOf").textContent = d ? d+" 종가 기준" : "최근 종가 기준";
+  if($("krStockAsOf")) $("krStockAsOf").textContent = d ? d+" 종가 기준" : "코스피 종가 기준";
+}
+
+/* ---- 국채 수익률 곡선 · 장단기 금리차 ---- */
+function curvePoints(){
+  var ten = (STATE.rates.US10Y && isFinite(STATE.rates.US10Y.last)) ? STATE.rates.US10Y.last : null;
+  var g = function(k){ var q = xq(k); return q ? q.last : null; };
+  return [
+    {lb:"3개월", key:"US3M",  v:g("US3M")},
+    {lb:"5년",   key:"US5Y",  v:g("US5Y")},
+    {lb:"10년",  key:"US10Y", v:ten},
+    {lb:"30년",  key:"US30Y", v:g("US30Y")}
+  ];
+}
+function renderCurve(){
+  var pts = curvePoints();
+  var vals = pts.map(function(p){ return isFinite(p.v) ? p.v : null; });
+  var okN = vals.filter(function(v){ return isFinite(v); }).length;
+  var box = $("curveChart");
+  if(!box) return;
+
+  if(okN < 3){
+    box.innerHTML = '<p class="note" style="padding:36px 0;text-align:center">중계 서버에 연결되면 표시됩니다.</p>';
+  } else {
+    box.innerHTML = lineChart({
+      host:"curveChart", height:240,
+      labels: pts.map(function(p){ return p.lb; }),
+      series: [{data:vals, color:"#16161a", fill:true}],
+      fmtY: function(v){ return v.toFixed(1)+"%"; }
+    });
+  }
+  $("curveRows").innerHTML = pts.map(function(p){
+    return '<div class="rowline"><span>'+p.lb+' 만기</span><b>'+(isFinite(p.v) ? nf(p.v,3)+"%" : "—")+'</b></div>';
+  }).join("");
+
+  renderSpread(pts);
+}
+function renderSpread(pts){
+  var m = {};
+  pts.forEach(function(p){ m[p.key] = p.v; });
+  var s1 = (isFinite(m.US10Y) && isFinite(m.US3M))  ? m.US10Y - m.US3M  : null;
+  var s2 = (isFinite(m.US30Y) && isFinite(m.US10Y)) ? m.US30Y - m.US10Y : null;
+  var badge = $("spreadBadge"), box = $("spreadBox");
+  if(!box) return;
+
+  if(s1 == null){
+    badge.textContent = "확인 중";
+    badge.className = "badge";
+    box.innerHTML = '<p class="note">중계 서버에 연결되면 표시됩니다.</p>';
+    return;
+  }
+  var state, tone, desc;
+  if(s1 < 0){
+    state = "역전"; tone = "badge warn";
+    desc = "단기 금리가 장기 금리보다 높습니다. 과거 경기 침체에 앞서 자주 나타났던 모습이라 시장이 예민하게 보는 구간입니다. 다만 역전 자체가 침체를 뜻하지는 않고, 시차도 길게는 1~2년으로 들쭉날쭉했습니다.";
+  } else if(s1 < 0.5){
+    state = "평탄"; tone = "badge";
+    desc = "장기와 단기 금리 차이가 거의 없습니다. 시장이 앞으로의 성장과 금리 방향을 확신하지 못할 때 나타나는 모습입니다.";
+  } else {
+    state = "정상"; tone = "badge live";
+    desc = "만기가 길수록 금리가 높은 우상향 곡선입니다. 돈을 오래 빌려줄수록 이자를 더 받는, 교과서적인 형태입니다.";
+  }
+  badge.textContent = state;
+  badge.className = tone;
+
+  box.innerHTML =
+    '<div class="rowline"><span>10년물 − 3개월물</span><b style="font-size:20px" class="'+(s1<0?"down":"")+'">'+(s1>0?"+":"")+nf(s1,2)+'%p</b></div>'+
+    '<div class="rowline"><span>30년물 − 10년물</span><b>'+(s2==null ? "—" : (s2>0?"+":"")+nf(s2,2)+"%p")+'</b></div>'+
+    '<p class="note">'+desc+'</p>'+
+    '<p class="note">이 값이 마이너스면 곡선이 뒤집힌 것입니다. 미국 연준의 정책금리는 짧은 쪽을, 성장과 물가에 대한 시장의 기대는 긴 쪽을 움직입니다.</p>';
+}
+
+/* ---- 김치 프리미엄 ---- */
+function renderKimchi(){
+  var g = $("kimchiGrid");
+  if(!g) return;
+  g.innerHTML = "";
+  var k = STATE.kimchi;
+  if(!k || !k.ok){
+    g.innerHTML = '<p class="note" style="grid-column:1/-1">업비트 시세를 불러오지 못했습니다. 새로고침을 눌러 다시 시도해 보세요.</p>';
+    $("kimchiAsOf").textContent = "연결 대기";
+    return;
+  }
+  ["BTC","ETH","XRP","SOL","DOGE"].forEach(function(c){
+    var r = k.coins[c];
+    if(!r) return;
+    var t = el("div","tile");
+    var pb = "";
+    if(r.prem != null){
+      pb = '<span class="badge '+(r.prem>0 ? "warn" : "live")+'">'+(r.prem>0?"+":"")+nf(r.prem,2)+'%</span>';
+    }
+    var usdDg = r.usd>=100 ? 0 : (r.usd>=1 ? 2 : 4);
+    t.innerHTML =
+      '<div class="t1"><span>'+COIN_KO[c]+' · '+c+'</span>'+pb+'</div>'+
+      '<div class="t2">'+nf(r.krw,0)+'<span style="font-size:12px;color:var(--dim);font-weight:600">원</span></div>'+
+      (r.chg!=null
+        ? '<div class="t3 '+dirCls(r.chg)+'">'+pct(r.chg)+' <span style="color:var(--dim);font-weight:600">전일 대비</span></div>'
+        : '<div class="t3">&nbsp;</div>')+
+      (r.usd && k.usdkrw
+        ? '<div class="t4">해외 $'+nf(r.usd,usdDg)+' · 환산 '+nf(r.usd*k.usdkrw,0)+'원</div>'
+        : '<div class="t4">&nbsp;</div>');
+    g.appendChild(t);
+  });
+  $("kimchiAsOf").textContent = k.usdkrw
+    ? "업비트 원화가 vs 해외 시세 × "+nf(k.usdkrw,1)+"원"
+    : "업비트 원화가";
+}
+
+/* ---- 경제 뉴스 ---- */
+function renderNews(){
+  var box = $("newsGrid");
+  if(!box) return;
+  box.innerHTML = "";
+  var n = STATE.news;
+  if(!n || !n.groups || !n.groups.length){
+    box.innerHTML = '<div class="card"><div class="card-b"><p class="note">뉴스를 불러오지 못했습니다. 새로고침을 눌러 다시 시도해 보세요.</p></div></div>';
+    return;
+  }
+  n.groups.forEach(function(g){
+    var items = (g.items||[]).map(function(it){
+      return '<a class="newsitem" href="'+esc(it.u)+'" target="_blank" rel="noopener noreferrer">'+
+             '<div class="nt">'+esc(it.t)+'</div>'+
+             '<div class="nm2"><span>'+esc(it.s||"")+'</span><span>'+timeAgo(it.at)+'</span></div></a>';
+    }).join("");
+    var c = el("div","card");
+    c.innerHTML =
+      '<div class="card-h"><h2>'+esc(g.label)+'</h2><span class="hint">'+(g.items?g.items.length:0)+'건</span></div>'+
+      '<div class="card-b" style="padding-top:4px">'+
+        (items || '<p class="note">기사를 불러오지 못했습니다.</p>')+
+      '</div>';
+    box.appendChild(c);
+  });
+  $("newsAsOf").textContent = "구글 뉴스 검색 결과 · 마지막 갱신 "+timeStr(new Date());
+}
+
+/* ---- 확장 데이터 로드 ---- */
+function loadPlus(){
+  if(!PROXY || PROXY.indexOf("http")!==0) return Promise.resolve(false);
+  return grab(PROXY+"?v=2&only=plus", 30000).then(function(j){
+    if(!j || !j.ok) return false;
+    var got = [];
+
+    if(j.extra && j.extra.quotes && Object.keys(j.extra.quotes).length){
+      STATE.extra = j.extra;
+      var d = null;
+      Object.keys(j.extra.quotes).forEach(function(k){
+        var q = j.extra.quotes[k];
+        if(q && q.date && (!d || q.date > d)) d = q.date;
+      });
+      STATE.extraDate = d;
+      got.push("세계지수 · 종목 · 금리커브: Yahoo Finance");
+    }
+    if(j.news && j.news.groups && j.news.groups.some(function(g){ return g.items && g.items.length; })){
+      STATE.news = j.news;
+      got.push("경제 헤드라인: 구글 뉴스");
+    }
+    if(j.kimchi && j.kimchi.ok){
+      STATE.kimchi = j.kimchi;
+      got.push("김치 프리미엄: 업비트");
+    }
+    if(!got.length) return false;
+    STATE.sources = STATE.sources.concat(got.map(function(s){ return s+" (중계)"; }));
+    return true;
+  });
+}
+
+/* 확장 화면 한 번에 다시 그리기 */
+function renderPlus(){
+  renderWorld(); renderCurve(); renderStocks(); renderKimchi(); renderNews();
+}
+
+/* =======================================================================
+   10. 이벤트 · 초기화
+   ======================================================================= */
+function bindTabs(){
+  var tabs = document.querySelectorAll(".tab");
+  Array.prototype.forEach.call(tabs, function(t){
+    t.onclick = function(){
+      Array.prototype.forEach.call(tabs, function(x){ x.setAttribute("aria-selected", x===t ? "true":"false"); });
+      ["market","world","etf","news","loan","compound","life","learn"].forEach(function(k){
+        $("panel-"+k).hidden = (k !== t.dataset.tab);
+      });
+      if(t.dataset.tab==="life"){ calcFx(); calcDeposit(); calcRule72(); calcInflation(); }
+      /* 숨겨진 동안 그린 차트는 폭이 0이라 다시 그린다 */
+      if(t.dataset.tab==="world"){ renderCurve(); }
+      window.scrollTo({top:0, behavior:"smooth"});
+    };
+  });
+}
+function bindSeg(id, cb){
+  var box = $(id);
+  box.onclick = function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    Array.prototype.forEach.call(box.querySelectorAll("button"), function(x){ x.setAttribute("aria-pressed", x===b ? "true":"false"); });
+    cb(b);
+  };
+}
+function bindNumberInput(id, cb, comma){
+  var inp = $(id);
+  inp.addEventListener("input", function(){
+    if(comma){
+      var pos = inp.selectionStart, before = inp.value.length;
+      var n = parseNum(inp.value);
+      inp.value = n ? nf(n) : "";
+      var after = inp.value.length;
+      try{ inp.setSelectionRange(Math.max(0,pos+after-before), Math.max(0,pos+after-before)); }catch(e){}
+    }
+    cb();
+  });
+  inp.addEventListener("blur", cb);
+}
+
+function init(){
+  bindTabs();
+  renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
+  renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
+  renderPlus();
+  renderLearn();
+  bindSeg("txMode", function(b){ txMode = b.dataset.m; renderTxForm(); });
+  renderTxForm();
+
+  bindSeg("flowSeg", function(b){ STATE.flow = b.dataset.flow; renderFlow(); });
+
+  /* 대출 */
+  bindSeg("lnType", function(b){ loanType = b.dataset.t; calcLoan(); });
+  ["lnAmt"].forEach(function(id){ bindNumberInput(id, calcLoan, true); });
+  ["lnRate","lnYear","lnGrace"].forEach(function(id){ bindNumberInput(id, calcLoan, false); });
+  $("lnReset").onclick = function(){
+    $("lnAmt").value="300,000,000"; $("lnRate").value="4.2"; $("lnYear").value="30"; $("lnGrace").value="0";
+    loanType="eqpay";
+    Array.prototype.forEach.call($("lnType").querySelectorAll("button"), function(x){ x.setAttribute("aria-pressed", x.dataset.t==="eqpay"?"true":"false"); });
+    calcLoan();
+  };
+  calcLoan();
+
+  /* 복리 */
+  bindSeg("cpMode", function(b){ cpMode = b.dataset.m; calcCompound(); });
+  ["cpInit","cpMonthly"].forEach(function(id){ bindNumberInput(id, calcCompound, true); });
+  ["cpYear","cpMonth","cpRate"].forEach(function(id){ bindNumberInput(id, calcCompound, false); });
+  $("cpRun").onclick = calcCompound;
+  $("cpMonthlyField").hidden = true;
+  calcCompound();
+
+  /* 환율·예적금 */
+  renderFxCur();
+  bindSeg("fxDir", function(b){ fxDir = b.dataset.d; calcFx(); });
+  bindNumberInput("fxAmt", calcFx, true);
+  bindSeg("dpMode", function(b){ dpMode = b.dataset.m; calcDeposit(); });
+  bindSeg("dpType", function(b){ dpType = b.dataset.t; calcDeposit(); });
+  bindNumberInput("dpAmt", calcDeposit, true);
+  ["dpRate","dpMonth"].forEach(function(id){ bindNumberInput(id, calcDeposit, false); });
+  bindNumberInput("ruleRate", calcRule72, false);
+  bindNumberInput("infAmt", calcInflation, true);
+  ["infRate","infYear"].forEach(function(id){ bindNumberInput(id, calcInflation, false); });
+  calcFx(); calcDeposit(); calcRule72(); calcInflation();
+
+  /* 갱신 */
+  $("btnRefresh").onclick = refresh;
+  var now = new Date();
+  $("stampTime").textContent = dateStr(now)+" "+timeStr(now);
+  refresh();
+  setInterval(refresh, 5*60*1000);
+
+  window.addEventListener("resize", function(){
+    clearTimeout(window.__rz);
+    window.__rz = setTimeout(function(){ renderFlow(); renderEtfChart(); renderCurve(); calcLoan(); calcCompound(); renderTax(); }, 250);
+  });
+}
+
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
+else init();
+</script>
+</body>
+</html>
