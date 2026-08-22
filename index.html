@@ -2205,7 +2205,9 @@ function renderKimchi(){
     var t = el("div","tile");
     var pb = "";
     if(r.prem != null){
-      pb = '<span class="badge '+(r.prem>0 ? "warn" : "live")+'">'+(r.prem>0?"+":"")+nf(r.prem,2)+'%</span>';
+      /* 배지에 live 를 쓰면 실시간 표시로 읽히므로, 프리미엄은 색만 다르게 준다 */
+      pb = '<span class="badge'+(r.prem>0 ? " warn" : "")+'"'+(r.prem<0 ? ' style="color:var(--down)"' : '')+'>'+
+           (r.prem>0?"+":"")+nf(r.prem,2)+'%</span>';
     }
     var usdDg = r.usd>=100 ? 0 : (r.usd>=1 ? 2 : 4);
     t.innerHTML =
