@@ -2819,28 +2819,37 @@ function loadCandles(r){
 
   $("cmChart").innerHTML = '<p class="note" style="padding:70px 0;text-align:center">차트를 불러오는 중…</p>';
 
-  var url = "https://api.upbit.com/v1/candles/" + def.path + "?market=" + m + "&count=" + def.count;
-  grab(url, 9000).then(function(arr){
-    if(arr && arr.length && isFinite(arr[0].trade_price)){
-      var rows = arr.slice().reverse().map(function(o){
-        return {t: candleLabel(o.candle_date_time_kst, def.kind), c: o.trade_price};
+  var done = function(rows){
+    CANDLE_CACHE[ck] = {at:Date.now(), rows:rows};
+    if(STATE.chart && STATE.chart.key === st.key && STATE.chart.range === r) drawCandleChart(rows, def);
+  };
+  var direct = function(){
+    /* 중계가 안 되면 업비트를 직접 — 다만 브라우저 직접 호출은 한도가 낮아 되도록 아낀다 */
+    grab("https://api.upbit.com/v1/candles/" + def.path + "?market=" + m + "&count=" + def.count, 9000)
+      .then(function(arr){
+        if(!arr || !arr.length || !isFinite(arr[0].trade_price)){ candleFail_(); return; }
+        done(arr.slice().reverse().map(function(o){
+          return {t: candleLabel(o.candle_date_time_kst, def.kind), c: o.trade_price};
+        }));
       });
-      CANDLE_CACHE[ck] = {at:Date.now(), rows:rows};
-      if(STATE.chart && STATE.chart.key === st.key && STATE.chart.range === r) drawCandleChart(rows, def);
-      return;
-    }
-    /* 브라우저가 막혔으면 중계로 한 번 더 */
-    if(!PROXY || PROXY.indexOf("http")!==0){ candleFail_(); return; }
-    grab(PROXY+"?v=2&only=candle&m="+encodeURIComponent(m)+"&u="+encodeURIComponent(r), 20000).then(function(j){
+  };
+
+  /* 캔들은 중계 서버를 먼저 쓴다.
+     업비트는 브라우저 요청(Origin 헤더)에 분당 10회 남짓의 낮은 한도를 매기고,
+     한도를 넘기면 CORS 헤더 없는 429 를 주기 때문에 차트를 몇 개만 열어 봐도 콘솔이 오류로 찬다.
+     중계는 5분봉을 1분, 나머지를 5~10분 캐시하므로 실시간성 손해도 거의 없다. */
+  if(!PROXY || PROXY.indexOf("http")!==0){ direct(); return; }
+  grab(PROXY+"?v=2&only=candle&m="+encodeURIComponent(m)+"&u="+encodeURIComponent(r), 20000)
+    .then(function(j){
       var cd = j && j.candle;
-      if(!cd || !cd.ok || !cd.close || !cd.close.length){ candleFail_(); return; }
-      var rows2 = cd.close.map(function(v, i){
-        return {t: candleLabel(cd.at[i], def.kind), c: v};
-      });
-      CANDLE_CACHE[ck] = {at:Date.now(), rows:rows2};
-      if(STATE.chart && STATE.chart.key === st.key && STATE.chart.range === r) drawCandleChart(rows2, def);
+      if(cd && cd.ok && cd.close && cd.close.length){
+        done(cd.close.map(function(v, i){
+          return {t: candleLabel(cd.at[i], def.kind), c: v};
+        }));
+        return;
+      }
+      direct();
     });
-  });
 }
 function candleFail_(){
   $("cmChart").innerHTML = '<p class="note" style="padding:60px 0;text-align:center">'+
