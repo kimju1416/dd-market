@@ -2666,10 +2666,15 @@ function coinCard(o){
   var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
   var d = has ? o.last-o.prev : 0, p = has ? d/o.prev*100 : 0;
   var krwLine = "";
-  if(usdkrw && isFinite(o.last)){
+  var up = (STATE.kimchi && STATE.kimchi.ok && STATE.kimchi.coins) ? STATE.kimchi.coins[o.key] : null;
+  var box = 'class="t5" style="margin-top:9px;padding-top:8px;border-top:1px dashed #e2e2db;font-size:12px;color:var(--sub);font-weight:600"';
+  if(up && isFinite(up.krw)){
+    /* 국내 거래소 체결가 — 한국에서 실제로 사고파는 '지금 값' */
+    krwLine = '<div '+box+'>업비트 지금 <b style="color:var(--ink);font-weight:800">'+nf(up.krw,0)+'원</b>'+
+      (up.chg!=null ? ' <span class="'+dirCls(up.chg)+'" style="font-weight:800">'+pct(up.chg)+'</span>' : '')+'</div>';
+  } else if(usdkrw && isFinite(o.last)){
     var w = o.last * usdkrw;
-    krwLine = '<div class="t5" style="margin-top:9px;padding-top:8px;border-top:1px dashed #e2e2db;font-size:12px;color:var(--sub);font-weight:600">'+
-      '원화 환산 <b style="color:var(--ink);font-weight:800">'+
+    krwLine = '<div '+box+'>원화 환산 <b style="color:var(--ink);font-weight:800">'+
       (w>=100000000 ? nf(w/100000000,2)+"억원" : nf(w,0)+"원")+'</b></div>';
   }
   c.innerHTML =
@@ -2694,7 +2699,10 @@ function renderCoins(){
   g.innerHTML = "";
   STATE.coins.forEach(function(o){ g.appendChild(coinCard(o)); });
   var live = STATE.coins.some(function(o){ return o.live; });
-  $("coinAsOf").textContent = live ? "실시간 · 달러 기준" : "참고값 · "+SNAP_DATE+" 기준";
+  var upOk = !!(STATE.kimchi && STATE.kimchi.ok);
+  $("coinAsOf").textContent = live
+    ? (upOk ? "달러는 해외 시세 · 원화는 업비트 체결가 · " : "달러 기준 · ") + timeStr(new Date()) + " 갱신"
+    : "참고값 · "+SNAP_DATE+" 기준";
 }
 
 /* =======================================================================
