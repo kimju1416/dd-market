@@ -743,7 +743,7 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
       </div>
       <div id="cmChart"></div>
       <div id="cmStats" style="margin-top:12px"></div>
-      <p class="note">최근 1년 일별 종가입니다(중계 서버 기준, 6시간마다 갱신).
+      <p class="note" id="cmNote">최근 1년 일별 종가입니다(중계 서버 기준, 6시간마다 갱신).
       과거 흐름일 뿐 앞으로를 보장하지 않으며, 매매 판단에는 증권사 정식 차트를 쓰세요.</p>
     </div>
   </div>
@@ -863,6 +863,7 @@ var STATE = {
   assets:  SNAP.assets.map(function(o){ return Object.assign({}, o, {live:false}); }),
   coins:   SNAP.coins.map(function(o){ return Object.assign({}, o, {live:false}); }),
   chart:   null,
+  up: null, upAt: null,
   fng:     Object.assign({}, SNAP.fng, {live:false}),
   cryptoSeries: null,
   fxSeries: null,
@@ -2557,14 +2558,27 @@ function chartFmtY(fmt){
 function openChart(key, name, sub, fmt){
   if(!key) return;
   var m = $("chartModal");
-  STATE.chart = {key:key, name:name, sub:sub, fmt:fmt||"num", range:6, data:null};
+  var isCoin = !!UPBIT_MARKET[key];
+  STATE.chart = {key:key, name:name, sub:sub, fmt:fmt||"num",
+                 kind: isCoin ? "coin" : "stock", range: isCoin ? "day" : "6", data:null};
   $("cmTitle").textContent = name || key;
-  $("cmSub").textContent = sub || "";
+  $("cmSub").textContent = isCoin
+    ? (sub||"").split(" · 최근 1년").join("") + " · 업비트 원화 기준"
+    : (sub || "");
+  if($("cmNote")){
+    $("cmNote").textContent = isCoin
+      ? "업비트 원화 캔들입니다. 5분·1시간봉은 실시간에 가깝고(45초~2분 간격), 일·주봉은 5~10분마다 갱신됩니다. 매매 판단에는 거래소 정식 차트를 쓰세요."
+      : "최근 1년 일별 종가입니다(중계 서버 기준, 6시간마다 갱신). 과거 흐름일 뿐 앞으로를 보장하지 않으며, 매매 판단에는 증권사 정식 차트를 쓰세요.";
+  }
   $("cmStats").innerHTML = "";
   $("cmChart").innerHTML = '<p class="note" style="padding:70px 0;text-align:center">차트를 불러오는 중…</p>';
+  renderRangeButtons(STATE.chart.kind, STATE.chart.range);
   m.hidden = false;
   document.body.style.overflow = "hidden";
   try{ $("cmClose").focus(); }catch(e){}
+
+  /* 코인은 업비트 캔들(5분·1시간·일·주)로 간다 */
+  if(isCoin){ loadCandles(STATE.chart.range); return; }
 
   if(CHART_CACHE[key]){ STATE.chart.data = CHART_CACHE[key]; drawChart(); return; }
   if(!PROXY || PROXY.indexOf("http")!==0){
@@ -2598,7 +2612,8 @@ function drawChart(){
   var d = st.data;
   /* 최근 1년치를 받아 두고 버튼으로 잘라 본다 (개월 × 21영업일) */
   var n = d.close.length;
-  var take = st.range >= 12 ? n : Math.min(n, Math.round(st.range * 21));
+  var mon = parseInt(st.range, 10) || 6;
+  var take = mon >= 12 ? n : Math.min(n, Math.round(mon * 21));
   var close = d.close.slice(n - take);
   var labels = d.labels.slice(n - take);
 
@@ -2626,6 +2641,14 @@ function drawChart(){
     '<div class="rowline"><span>기간 최대 낙폭</span><b class="down">'+nf(mdd,1)+'%</b></div>';
 }
 
+/* 창 크기가 바뀌면 열려 있는 차트를 다시 그린다 */
+function redrawOpenChart(){
+  var st = STATE.chart;
+  if(!st) return;
+  if(st.kind === "coin") loadCandles(st.range);
+  else drawChart();
+}
+
 function bindChartModal(){
   /* 카드·표 어디를 눌러도 되도록 문서에 한 번만 건다 */
   document.addEventListener("click", function(e){
@@ -2650,8 +2673,9 @@ function bindChartModal(){
   $("chartBg").onclick = closeChart;
   bindSeg("cmRange", function(b){
     if(!STATE.chart) return;
-    STATE.chart.range = parseInt(b.getAttribute("data-r"), 10);
-    drawChart();
+    STATE.chart.range = b.getAttribute("data-r");
+    if(STATE.chart.kind === "coin") loadCandles(STATE.chart.range);
+    else drawChart();
   });
 }
 
@@ -2666,7 +2690,8 @@ function coinCard(o){
   var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
   var d = has ? o.last-o.prev : 0, p = has ? d/o.prev*100 : 0;
   var krwLine = "";
-  var up = (STATE.kimchi && STATE.kimchi.ok && STATE.kimchi.coins) ? STATE.kimchi.coins[o.key] : null;
+  var up = (STATE.up && STATE.up[o.key]) ? STATE.up[o.key]
+         : ((STATE.kimchi && STATE.kimchi.ok && STATE.kimchi.coins) ? STATE.kimchi.coins[o.key] : null);
   var box = 'class="t5" style="margin-top:9px;padding-top:8px;border-top:1px dashed #e2e2db;font-size:12px;color:var(--sub);font-weight:600"';
   if(up && isFinite(up.krw)){
     /* 국내 거래소 체결가 — 한국에서 실제로 사고파는 '지금 값' */
@@ -2699,10 +2724,144 @@ function renderCoins(){
   g.innerHTML = "";
   STATE.coins.forEach(function(o){ g.appendChild(coinCard(o)); });
   var live = STATE.coins.some(function(o){ return o.live; });
-  var upOk = !!(STATE.kimchi && STATE.kimchi.ok);
+  var upOk = !!(STATE.up || (STATE.kimchi && STATE.kimchi.ok));
+  var ago = STATE.upAt ? Math.round((Date.now()-STATE.upAt)/1000) : null;
+  var when = (ago==null) ? timeStr(new Date())+" 갱신"
+           : (ago < 15 ? "방금 갱신" : (ago < 90 ? ago+"초 전" : timeStr(new Date(STATE.upAt))+" 갱신"));
   $("coinAsOf").textContent = live
-    ? (upOk ? "달러는 해외 시세 · 원화는 업비트 체결가 · " : "달러 기준 · ") + timeStr(new Date()) + " 갱신"
+    ? (upOk ? "달러는 해외 시세 · 원화는 업비트 실시간 · " : "달러 기준 · ") + when
     : "참고값 · "+SNAP_DATE+" 기준";
+}
+
+/* =======================================================================
+   9-f. 업비트 실시간 시세 · 코인 캔들(5분 / 1시간 / 일 / 주)
+        브라우저가 업비트를 직접 부른다(CORS 열려 있음).
+        학교·사내망에서 막히면 몇 번 시도하다 멈추고 중계 서버 값으로 돌아간다.
+   ======================================================================= */
+var UPBIT_MARKET = {BTC:"KRW-BTC", ETH:"KRW-ETH", XRP:"KRW-XRP", SOL:"KRW-SOL", DOGE:"KRW-DOGE"};
+var UP_FAIL = 0;
+
+function tickUpbit(){
+  if(UP_FAIL >= 3) return Promise.resolve(false);      /* 막힌 망이면 그만 두드린다 */
+  var ms = [];
+  STATE.coins.forEach(function(o){ if(UPBIT_MARKET[o.key]) ms.push(UPBIT_MARKET[o.key]); });
+  if(!ms.length) return Promise.resolve(false);
+
+  return grab("https://api.upbit.com/v1/ticker?markets=" + encodeURIComponent(ms.join(",")), 6000)
+    .then(function(arr){
+      if(!arr || !arr.length || !arr[0] || !isFinite(arr[0].trade_price)){ UP_FAIL++; return false; }
+      UP_FAIL = 0;
+      var by = {};
+      arr.forEach(function(r){ by[r.market] = r; });
+      STATE.up = STATE.up || {};
+      Object.keys(UPBIT_MARKET).forEach(function(k){
+        var r = by[UPBIT_MARKET[k]];
+        if(r && isFinite(r.trade_price)){
+          STATE.up[k] = {
+            krw: r.trade_price,
+            chg: isFinite(r.signed_change_rate) ? r.signed_change_rate*100 : null
+          };
+        }
+      });
+      STATE.upAt = Date.now();
+      renderCoins();
+      return true;
+    }).catch(function(){ UP_FAIL++; return false; });
+}
+
+/* ---- 코인 캔들 ---- */
+var CANDLE_CACHE = {};
+var UNIT_DEF = [
+  {r:"5",    label:"5분",   path:"minutes/5",  count:200, ttl:45000,  kind:"time", note:"최근 약 16시간"},
+  {r:"60",   label:"1시간", path:"minutes/60", count:200, ttl:120000, kind:"time", note:"최근 약 8일"},
+  {r:"day",  label:"일봉",  path:"days",       count:200, ttl:300000, kind:"date", note:"최근 200일"},
+  {r:"week", label:"주봉",  path:"weeks",      count:120, ttl:600000, kind:"date", note:"최근 120주"}
+];
+function unitDef(r){
+  for(var i=0;i<UNIT_DEF.length;i++){ if(UNIT_DEF[i].r === r) return UNIT_DEF[i]; }
+  return UNIT_DEF[2];
+}
+/* "2026-08-23T23:20:00" → 5분·1시간은 23:20, 일·주는 8/23 */
+function candleLabel(iso, kind){
+  if(!iso) return "";
+  var d = iso.split("T");
+  if(kind === "time") return (d[1]||"").slice(0,5);
+  var p = (d[0]||"").split("-");
+  return parseInt(p[1],10) + "/" + parseInt(p[2],10);
+}
+
+function loadCandles(r){
+  var st = STATE.chart;
+  if(!st) return;
+  var m = UPBIT_MARKET[st.key];
+  if(!m){ drawChart(); return; }
+  var def = unitDef(r);
+  var ck = m + "_" + r;
+  var hit = CANDLE_CACHE[ck];
+  if(hit && (Date.now() - hit.at) < def.ttl){ drawCandleChart(hit.rows, def); return; }
+
+  $("cmChart").innerHTML = '<p class="note" style="padding:70px 0;text-align:center">차트를 불러오는 중…</p>';
+
+  var url = "https://api.upbit.com/v1/candles/" + def.path + "?market=" + m + "&count=" + def.count;
+  grab(url, 9000).then(function(arr){
+    if(arr && arr.length && isFinite(arr[0].trade_price)){
+      var rows = arr.slice().reverse().map(function(o){
+        return {t: candleLabel(o.candle_date_time_kst, def.kind), c: o.trade_price};
+      });
+      CANDLE_CACHE[ck] = {at:Date.now(), rows:rows};
+      if(STATE.chart && STATE.chart.key === st.key && STATE.chart.range === r) drawCandleChart(rows, def);
+      return;
+    }
+    /* 브라우저가 막혔으면 중계로 한 번 더 */
+    if(!PROXY || PROXY.indexOf("http")!==0){ candleFail_(); return; }
+    grab(PROXY+"?v=2&only=candle&m="+encodeURIComponent(m)+"&u="+encodeURIComponent(r), 20000).then(function(j){
+      var cd = j && j.candle;
+      if(!cd || !cd.ok || !cd.close || !cd.close.length){ candleFail_(); return; }
+      var rows2 = cd.close.map(function(v, i){
+        return {t: candleLabel(cd.at[i], def.kind), c: v};
+      });
+      CANDLE_CACHE[ck] = {at:Date.now(), rows:rows2};
+      if(STATE.chart && STATE.chart.key === st.key && STATE.chart.range === r) drawCandleChart(rows2, def);
+    });
+  });
+}
+function candleFail_(){
+  $("cmChart").innerHTML = '<p class="note" style="padding:60px 0;text-align:center">'+
+    '코인 시세를 불러오지 못했습니다. 학교·사내망에서는 암호화폐 사이트가 막혀 있을 수 있습니다.</p>';
+}
+
+function drawCandleChart(rows, def){
+  var close = rows.map(function(o){ return o.c; });
+  var labels = rows.map(function(o){ return o.t; });
+  $("cmChart").innerHTML = lineChart({
+    host:"cmChart", height:300, labels:labels,
+    series:[{data:close, color:"#16161a", fill:true}],
+    fmtY: chartFmtY("krw")
+  });
+  var first = close[0], last = close[close.length-1];
+  var ret = first ? (last-first)/first*100 : 0;
+  var hi = Math.max.apply(null, close), lo = Math.min.apply(null, close);
+  var mdd = maxDrawdown_(close);
+  var up = STATE.up && STATE.chart ? STATE.up[STATE.chart.key] : null;
+  $("cmStats").innerHTML =
+    '<div class="rowline"><span>지금 (업비트)</span><b style="font-size:19px">'+
+      nf(up && isFinite(up.krw) ? up.krw : last, 0)+'원</b></div>'+
+    (up && up.chg!=null
+      ? '<div class="rowline"><span>전일 대비</span><b class="'+dirCls(up.chg)+'">'+pct(up.chg)+'</b></div>' : '')+
+    '<div class="rowline"><span>'+def.note+' 등락</span><b class="'+dirCls(ret)+'">'+pct(ret)+'</b></div>'+
+    '<div class="rowline"><span>기간 최고 / 최저</span><b>'+nf(hi,0)+'원 / '+nf(lo,0)+'원</b></div>'+
+    '<div class="rowline"><span>기간 최대 낙폭</span><b class="down">'+nf(mdd,1)+'%</b></div>';
+}
+
+/* 기간 버튼은 코인이냐 아니냐에 따라 갈아 끼운다 */
+function renderRangeButtons(kind, active){
+  var box = $("cmRange");
+  var list = (kind === "coin")
+    ? UNIT_DEF.map(function(u){ return {r:u.r, label:u.label}; })
+    : [{r:"1",label:"1개월"},{r:"3",label:"3개월"},{r:"6",label:"6개월"},{r:"12",label:"1년"}];
+  box.innerHTML = list.map(function(o){
+    return '<button type="button" data-r="'+o.r+'" aria-pressed="'+(o.r===active?"true":"false")+'">'+o.label+'</button>';
+  }).join("");
 }
 
 /* =======================================================================
@@ -2793,6 +2952,9 @@ function init(){
 
   /* 갱신 */
   $("btnRefresh").onclick = refresh;
+  /* 코인은 업비트에서 10초마다 직접 받아 카드만 새로 그린다 */
+  tickUpbit();
+  setInterval(tickUpbit, 10000);
   var now = new Date();
   $("stampTime").textContent = dateStr(now)+" "+timeStr(now);
   refresh();
@@ -2800,7 +2962,7 @@ function init(){
 
   window.addEventListener("resize", function(){
     clearTimeout(window.__rz);
-    window.__rz = setTimeout(function(){ renderFlow(); renderEtfChart(); renderCurve(); drawChart(); calcLoan(); calcCompound(); renderTax(); }, 250);
+    window.__rz = setTimeout(function(){ renderFlow(); renderEtfChart(); renderCurve(); redrawOpenChart(); calcLoan(); calcCompound(); renderTax(); }, 250);
   });
 }
 

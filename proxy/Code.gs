@@ -46,13 +46,15 @@ function doGet(e) {
   var out = {ok:true, ts:new Date().toISOString(), source:'yahoo-finance'};
 
   try {
-    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'beach' || only === 'chart' || only === 'diag' || only === 'diagnews') {
+    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'beach' || only === 'chart' || only === 'candle' || only === 'diag' || only === 'diagnews') {
       /* 확장 데이터 — 기존 core 응답과 완전히 분리해 둔다(옛 화면에 영향 없음) */
       if (only === 'plus' || only === 'extra')  out.extra  = fetchExtra_();
       if (only === 'plus' || only === 'news')   out.news   = fetchNews_();
       if (only === 'plus' || only === 'kimchi') out.kimchi = fetchKimchi_();
       if (only === 'beach') out.beach = fetchBeach_();
       if (only === 'chart') out.chart = fetchChartOne_((e && e.parameter && e.parameter.k) || '');
+      if (only === 'candle') out.candle = fetchCandle_((e && e.parameter && e.parameter.m) || '',
+                                                       (e && e.parameter && e.parameter.u) || '');
       if (only === 'diag') out.diag = diagSyms_();
       if (only === 'diagnews') out.diagnews = diagNews_();
     } else {
@@ -604,5 +606,44 @@ function fetchChartOne_(k) {
     last: parsed.last, prev: parsed.prev, date: parsed.date
   };
   putCache_(c, ck, out, 21600);
+  return out;
+}
+
+/* ---------------- 코인 캔들 (업비트) — 브라우저가 막혔을 때의 폴백 ----------------
+   마켓·단위 모두 화이트리스트. 5분봉은 1분, 나머지는 5분 캐시. */
+var UPBIT_UNIT = {
+  '5':    {path:'minutes/5',  count:200, sec:60},
+  '60':   {path:'minutes/60', count:200, sec:300},
+  'day':  {path:'days',       count:200, sec:300},
+  'week': {path:'weeks',      count:120, sec:600}
+};
+
+function fetchCandle_(m, u) {
+  var okMarket = false;
+  Object.keys(UPBIT_MK).forEach(function (k) { if (UPBIT_MK[k] === m) okMarket = true; });
+  var def = UPBIT_UNIT[u];
+  if (!okMarket || !def) return {ok:false, error:'bad params'};
+
+  var c = CacheService.getScriptCache();
+  var ck = 'cd_' + m + '_' + u;
+  var hit = c.get(ck);
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+
+  var url = 'https://api.upbit.com/v1/candles/' + def.path +
+            '?market=' + encodeURIComponent(m) + '&count=' + def.count;
+  var arr = null;
+  try {
+    var r = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA});
+    if (r.getResponseCode() === 200) arr = JSON.parse(r.getContentText());
+  } catch (e) {}
+  if (!arr || !arr.length) return {ok:false, error:'no data'};
+
+  arr.reverse();   /* 업비트는 최신이 먼저 온다 */
+  var out = {
+    ok: true, market: m, unit: u,
+    at: arr.map(function (r2) { return r2.candle_date_time_kst; }),
+    close: arr.map(function (r2) { return r2.trade_price; })
+  };
+  putCache_(c, ck, out, def.sec);
   return out;
 }
