@@ -600,6 +600,17 @@ function fetchChartOne_(k, r) {
   }
   if (!parsed || parsed.rows.length < 5) return {ok:false, error:'no data', key:k};
 
+  /* 야후가 순간적으로 구간을 덜 주는 일이 있다(^NDX 10년이 41개월치만 온 적 있음).
+     10년 월봉인데 5년치도 안 되면 한 번 더 불러 긴 쪽을 쓰고, 그래도 짧으면 캐시를 짧게 준다. */
+  if (long_ && parsed.rows.length < 60) {
+    Utilities.sleep(500);
+    var again = null;
+    try {
+      again = parseYahoo_(UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA}));
+    } catch (e2) {}
+    if (again && again.rows.length > parsed.rows.length) parsed = again;
+  }
+
   var out = {
     ok: true, key: k, symbol: sym, range: range,
     labels: parsed.rows.map(function (row) {
@@ -611,7 +622,7 @@ function fetchChartOne_(k, r) {
     close: parsed.rows.map(function (row) { return round_(row.c, 4); }),
     last: parsed.last, prev: parsed.prev, date: parsed.date
   };
-  putCache_(c, ck, out, long_ ? 21600 : 21600);
+  putCache_(c, ck, out, (long_ && out.close.length < 60) ? 1800 : 21600);
   return out;
 }
 
