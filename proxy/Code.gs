@@ -52,7 +52,8 @@ function doGet(e) {
       if (only === 'plus' || only === 'news')   out.news   = fetchNews_();
       if (only === 'plus' || only === 'kimchi') out.kimchi = fetchKimchi_();
       if (only === 'beach') out.beach = fetchBeach_();
-      if (only === 'chart') out.chart = fetchChartOne_((e && e.parameter && e.parameter.k) || '');
+      if (only === 'chart') out.chart = fetchChartOne_((e && e.parameter && e.parameter.k) || '',
+                                                      (e && e.parameter && e.parameter.r) || '1y');
       if (only === 'candle') out.candle = fetchCandle_((e && e.parameter && e.parameter.m) || '',
                                                        (e && e.parameter && e.parameter.u) || '');
       if (only === 'diag') out.diag = diagSyms_();
@@ -573,39 +574,44 @@ function fetchBeach_() {
 
 /* ---------------- 카드 클릭용 개별 차트 (최근 1년 일봉) ----------------
    키는 반드시 SYM / SYM_X 에 등록된 것만 받는다(임의 URL 중계 금지). */
-function fetchChartOne_(k) {
+function fetchChartOne_(k, r) {
   var sym = SYM[k] || SYM_X[k];
   if (!sym) return {ok:false, error:'unknown key'};
+  /* 구간은 두 가지만 — 최근 1년 일봉, 최근 10년 월봉 */
+  var long_ = (r === '10y');
+  var range = long_ ? '10y' : '1y';
+  var interval = long_ ? '1mo' : '1d';
 
   var c = CacheService.getScriptCache();
-  var ck = 'ch_' + k;
+  var ck = 'ch_' + k + '_' + range;
   var hit = c.get(ck);
   if (hit) { try { return JSON.parse(hit); } catch (e) {} }
 
   var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
-            encodeURIComponent(sym) + '?range=1y&interval=1d';
+            encodeURIComponent(sym) + '?range=' + range + '&interval=' + interval;
   var parsed = null;
   for (var i = 0; i < 2 && !parsed; i++) {
-    var r = null;
+    var resp = null;
     try {
-      r = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA});
+      resp = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA});
     } catch (e) {}
-    parsed = parseYahoo_(r);
+    parsed = parseYahoo_(resp);
     if (!parsed && i === 0) Utilities.sleep(400);
   }
   if (!parsed || parsed.rows.length < 5) return {ok:false, error:'no data', key:k};
 
   var out = {
-    ok: true, key: k, symbol: sym,
-    labels: parsed.rows.map(function (r) {
-      var p = r.d.split('-');
-      return parseInt(p[1], 10) + '/' + parseInt(p[2], 10);
+    ok: true, key: k, symbol: sym, range: range,
+    labels: parsed.rows.map(function (row) {
+      if (long_) return row.d.slice(0, 7).replace('-', '.');   /* 2016.09 */
+      var p = row.d.split('-');
+      return parseInt(p[1], 10) + '/' + parseInt(p[2], 10);    /* 8/23 */
     }),
-    dates: parsed.rows.map(function (r) { return r.d; }),
-    close: parsed.rows.map(function (r) { return round_(r.c, 4); }),
+    dates: parsed.rows.map(function (row) { return row.d; }),
+    close: parsed.rows.map(function (row) { return round_(row.c, 4); }),
     last: parsed.last, prev: parsed.prev, date: parsed.date
   };
-  putCache_(c, ck, out, 21600);
+  putCache_(c, ck, out, long_ ? 21600 : 21600);
   return out;
 }
 
