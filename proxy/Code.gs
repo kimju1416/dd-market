@@ -46,12 +46,13 @@ function doGet(e) {
   var out = {ok:true, ts:new Date().toISOString(), source:'yahoo-finance'};
 
   try {
-    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'beach' || only === 'diag' || only === 'diagnews') {
+    if (only === 'plus' || only === 'extra' || only === 'news' || only === 'kimchi' || only === 'beach' || only === 'chart' || only === 'diag' || only === 'diagnews') {
       /* 확장 데이터 — 기존 core 응답과 완전히 분리해 둔다(옛 화면에 영향 없음) */
       if (only === 'plus' || only === 'extra')  out.extra  = fetchExtra_();
       if (only === 'plus' || only === 'news')   out.news   = fetchNews_();
       if (only === 'plus' || only === 'kimchi') out.kimchi = fetchKimchi_();
       if (only === 'beach') out.beach = fetchBeach_();
+      if (only === 'chart') out.chart = fetchChartOne_((e && e.parameter && e.parameter.k) || '');
       if (only === 'diag') out.diag = diagSyms_();
       if (only === 'diagnews') out.diagnews = diagNews_();
     } else {
@@ -565,5 +566,43 @@ function fetchBeach_() {
 
   var out = {marine:pick(res[0]), weather:pick(res[1])};
   putCache_(c, 'b_v1', out, (out.marine || out.weather) ? 600 : 120);
+  return out;
+}
+
+/* ---------------- 카드 클릭용 개별 차트 (최근 1년 일봉) ----------------
+   키는 반드시 SYM / SYM_X 에 등록된 것만 받는다(임의 URL 중계 금지). */
+function fetchChartOne_(k) {
+  var sym = SYM[k] || SYM_X[k];
+  if (!sym) return {ok:false, error:'unknown key'};
+
+  var c = CacheService.getScriptCache();
+  var ck = 'ch_' + k;
+  var hit = c.get(ck);
+  if (hit) { try { return JSON.parse(hit); } catch (e) {} }
+
+  var url = 'https://query1.finance.yahoo.com/v8/finance/chart/' +
+            encodeURIComponent(sym) + '?range=1y&interval=1d';
+  var parsed = null;
+  for (var i = 0; i < 2 && !parsed; i++) {
+    var r = null;
+    try {
+      r = UrlFetchApp.fetch(url, {muteHttpExceptions:true, followRedirects:true, headers:UA});
+    } catch (e) {}
+    parsed = parseYahoo_(r);
+    if (!parsed && i === 0) Utilities.sleep(400);
+  }
+  if (!parsed || parsed.rows.length < 5) return {ok:false, error:'no data', key:k};
+
+  var out = {
+    ok: true, key: k, symbol: sym,
+    labels: parsed.rows.map(function (r) {
+      var p = r.d.split('-');
+      return parseInt(p[1], 10) + '/' + parseInt(p[2], 10);
+    }),
+    dates: parsed.rows.map(function (r) { return r.d; }),
+    close: parsed.rows.map(function (r) { return round_(r.c, 4); }),
+    last: parsed.last, prev: parsed.prev, date: parsed.date
+  };
+  putCache_(c, ck, out, 21600);
   return out;
 }

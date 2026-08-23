@@ -191,6 +191,28 @@ tbody tr:last-child td{border-bottom:0}
 .taxcard .tc-r{display:flex; justify-content:space-between; align-items:baseline; gap:10px; padding:5px 0; font-size:13px}
 .taxcard .tc-r span{color:var(--sub); flex:0 0 auto}
 .taxcard .tc-r b{text-align:right; font-variant-numeric:tabular-nums}
+/* ===== 클릭 가능한 시세 카드 · 차트 모달 ===== */
+[data-ck]{cursor:pointer}
+.card[data-ck]:hover{border-color:#d4d4cd; background:#fdfdfb}
+.tile[data-ck]:hover{border-color:#dcdcd5; background:#fbfbf8}
+tr[data-ck]:hover{background:#fafaf7}
+[data-ck]:focus-visible{outline:2px solid var(--lime-d); outline-offset:2px}
+.modal[hidden]{display:none}
+.modal{position:fixed; top:0; right:0; bottom:0; left:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:18px}
+.modal-bg{position:absolute; top:0; right:0; bottom:0; left:0; background:rgba(20,20,24,.42)}
+.modal-box{position:relative; width:min(760px,100%); max-height:88vh; overflow-y:auto; background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:0 18px 48px rgba(20,20,24,.18)}
+.modal-h{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:18px 20px 0}
+.modal-h h2{margin:0; font-size:19px; font-weight:800; letter-spacing:-.02em}
+.modal-sub{margin-top:3px; font-size:12.5px; color:var(--sub); font-weight:600}
+.modal-x{border:1px solid var(--line); background:#fff; border-radius:999px; width:32px; height:32px; font-size:13px; color:var(--sub); flex:0 0 auto; line-height:1}
+.modal-x:hover{background:#fafaf7; color:var(--ink)}
+.modal-b{padding:14px 20px 20px}
+@media (max-width:620px){
+  .modal{padding:10px}
+  .modal-h{padding:15px 15px 0}
+  .modal-b{padding:12px 15px 16px}
+}
+
 /* ===== 바다 상태 띠 ===== */
 .beach{margin-top:16px; background:var(--card); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow);
   padding:13px 16px; display:flex; align-items:center; gap:8px 16px; flex-wrap:wrap}
@@ -236,7 +258,7 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
   .brand h1{font-size:21px}
   .g5,.g4,.g3,.g2{grid-template-columns:1fr}
   /* 시세는 한눈에 훑도록 2열 유지 */
-  #idxGrid,#fxGrid,#assetGrid,#kimchiGrid,#asiaGrid,#euroGrid{grid-template-columns:1fr 1fr; gap:8px}
+  #idxGrid,#fxGrid,#assetGrid,#kimchiGrid,#asiaGrid,#euroGrid,#coinGrid{grid-template-columns:1fr 1fr; gap:8px}
   #idxGrid .quote,#asiaGrid .quote,#euroGrid .quote{padding:12px 12px}
   #idxGrid .quote .val,#asiaGrid .quote .val,#euroGrid .quote .val{font-size:19px}
   #idxGrid .quote .chg,#idxGrid .quote .nm b,#asiaGrid .quote .chg,#asiaGrid .quote .nm b,#euroGrid .quote .chg,#euroGrid .quote .nm b{font-size:12px}
@@ -290,6 +312,11 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
     <div class="grid g4" id="domGrid"></div>
   </div>
 
+  <div class="sec">
+    <h2 class="sec-title">암호화폐 <span id="coinAsOf">달러 기준 · 원화 환산 함께 표시</span></h2>
+    <div class="grid g3" id="coinGrid"></div>
+  </div>
+
   <div class="sec split">
     <div class="card">
       <div class="card-h">
@@ -341,7 +368,7 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
   </div>
 
   <div class="sec">
-    <h2 class="sec-title">원자재 · 암호화폐 <span id="assetAsOf"></span></h2>
+    <h2 class="sec-title">원자재 <span id="assetAsOf"></span></h2>
     <div class="grid g4" id="assetGrid"></div>
   </div>
 
@@ -696,6 +723,32 @@ svg .axtxt{fill:#9a9aa1; font-size:10.5px; font-family:inherit}
 
 </main>
 
+<!-- 카드를 누르면 뜨는 차트 -->
+<div class="modal" id="chartModal" hidden>
+  <div class="modal-bg" id="chartBg"></div>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+    <div class="modal-h">
+      <div style="min-width:0">
+        <h2 id="cmTitle">—</h2>
+        <div class="modal-sub" id="cmSub"></div>
+      </div>
+      <button class="modal-x" id="cmClose" type="button" aria-label="닫기">✕</button>
+    </div>
+    <div class="modal-b">
+      <div class="seg" id="cmRange" style="margin-bottom:12px">
+        <button type="button" data-r="1" aria-pressed="false">1개월</button>
+        <button type="button" data-r="3" aria-pressed="false">3개월</button>
+        <button type="button" data-r="6" aria-pressed="true">6개월</button>
+        <button type="button" data-r="12" aria-pressed="false">1년</button>
+      </div>
+      <div id="cmChart"></div>
+      <div id="cmStats" style="margin-top:12px"></div>
+      <p class="note">최근 1년 일별 종가입니다(중계 서버 기준, 6시간마다 갱신).
+      과거 흐름일 뿐 앞으로를 보장하지 않으며, 매매 판단에는 증권사 정식 차트를 쓰세요.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -732,11 +785,13 @@ var SNAP = {
     {key:"GOLD", name:"금",     tag:"GOLD/USD", unit:"$", last:4579,   prev:4489},
     {key:"SILV", name:"은",     tag:"SILVER/USD", unit:"$", last:68.28, prev:65.73},
     {key:"COPR", name:"구리",   tag:"COPPER/USD", unit:"$", last:6.49,  prev:6.49},
-    {key:"WTI",  name:"WTI 유가", tag:"CRUDE/USD", unit:"$", last:86.30, prev:85.83},
-    {key:"BTC",  name:"비트코인", tag:"BTC", unit:"$", last:73097, prev:69266},
-    {key:"ETH",  name:"이더리움", tag:"ETH", unit:"$", last:2326,  prev:2251},
-    {key:"SOL",  name:"솔라나",  tag:"SOL", unit:"$", last:87.63, prev:85.37},
-    {key:"XRP",  name:"리플",    tag:"XRP", unit:"$", last:1.27,  prev:1.10}
+    {key:"WTI",  name:"WTI 유가", tag:"CRUDE/USD", unit:"$", last:86.30, prev:85.83}
+  ],
+  /* 코인은 지수와 같은 크기 카드로 위쪽에 따로 둔다 */
+  coins: [
+    {key:"BTC", name:"비트코인", tag:"BTC/USD", unit:"$", last:73097, prev:69266},
+    {key:"ETH", name:"이더리움", tag:"ETH/USD", unit:"$", last:2326,  prev:2251},
+    {key:"XRP", name:"리플",     tag:"XRP/USD", unit:"$", last:1.27,  prev:1.10}
   ],
   fng: {value:52, label:"중립", asOf:SNAP_DATE, hist:[{k:"1주 전",v:64},{k:"1개월 전",v:43},{k:"1년 전",v:53}]},
   policy: {
@@ -806,6 +861,8 @@ var STATE = {
   rates: {US10Y:{last:null, prev:null, live:false}, DXY:{last:null, prev:null, live:false}},
   fx:      SNAP.fx.map(function(o){ return Object.assign({}, o, {live:false}); }),
   assets:  SNAP.assets.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  coins:   SNAP.coins.map(function(o){ return Object.assign({}, o, {live:false}); }),
+  chart:   null,
   fng:     Object.assign({}, SNAP.fng, {live:false}),
   cryptoSeries: null,
   fxSeries: null,
@@ -841,6 +898,12 @@ function quoteCard(o){
     (has
       ? '<div class="chg '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,2)+' ('+pct(p)+') '+(d>0?"상승":(d<0?"하락":"보합"))+'</div>'
       : '<div class="chg flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div>');
+  c.setAttribute("data-ck", o.key);
+  c.setAttribute("data-cn", o.name);
+  c.setAttribute("data-cs", o.sub+" · 최근 1년");
+  c.setAttribute("data-cf", "num");
+  c.setAttribute("role", "button");
+  c.setAttribute("tabindex", "0");
   return c;
 }
 function renderIndices(){
@@ -900,10 +963,16 @@ function renderAssets(){
       '<div class="t2">'+o.unit+nf(o.last,dg)+'</div>'+
       '<div class="t3 '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,dg)+' ('+pct(p)+')</div>'+
       '<div class="t4">전일 '+o.unit+nf(o.prev,dg)+'</div>';
+    t.setAttribute("data-ck", o.key);
+    t.setAttribute("data-cn", o.name);
+    t.setAttribute("data-cs", o.tag+" · 최근 1년");
+    t.setAttribute("data-cf", "usd");
+    t.setAttribute("role", "button");
+    t.setAttribute("tabindex", "0");
     g.appendChild(t);
   });
   var live = STATE.assets.some(function(o){ return o.live; });
-  $("assetAsOf").textContent = live ? "코인은 실시간 · 원자재는 참고값" : "참고값 · "+SNAP_DATE+" 기준";
+  $("assetAsOf").textContent = live ? "실시간 · 국제 시세" : "참고값 · "+SNAP_DATE+" 기준";
 }
 
 function fngTone(v){
@@ -1084,7 +1153,7 @@ function renderFlow(){
       });
       note.textContent = "최근 30일 일별 종가입니다. 암호화폐는 주식보다 변동이 크므로 같은 잣대로 비교하지 마세요.";
     } else {
-      head.innerHTML = legend([{color:"#f0a35f", label:"BTC/USD", value:"$"+nf(STATE.assets[4].last,0)}]);
+      head.innerHTML = legend([{color:"#f0a35f", label:"BTC/USD", value:"$"+nf(STATE.coins[0].last,0)}]);
       chart.innerHTML = '<p class="skel" style="padding:40px 0;text-align:center">코인 시계열을 불러오지 못했습니다.</p>';
       note.textContent = "학교망·사내망에서는 금융 사이트 접속이 차단돼 시계열을 못 받아올 수 있습니다.";
     }
@@ -1126,7 +1195,16 @@ function loadProxy(){
           };
         }
       });
-      /* 원자재도 같은 표에서 온다 (코인은 crypto 쪽) */
+      /* 코인도 quotes 에 함께 온다 — crypto 쪽이 비어도 값이 차도록 */
+      STATE.coins.forEach(function(a){
+        var q = j.quotes[a.key];
+        if(q && isFinite(q.last)){
+          a.last = q.last;
+          a.prev = (q.prev!=null && isFinite(q.prev)) ? q.prev : a.prev;
+          a.live = true;
+        }
+      });
+      /* 원자재도 같은 표에서 온다 */
       STATE.assets.forEach(function(a){
         var q = j.quotes[a.key];
         if(q && isFinite(q.last)){
@@ -1169,7 +1247,7 @@ function loadProxy(){
 
     if(j.crypto && j.crypto.prices){
       var p = j.crypto.prices, n = 0;
-      STATE.assets.forEach(function(a){
+      STATE.coins.forEach(function(a){
         var c = p[a.key];
         if(c && isFinite(c.last)){
           a.last = c.last;
@@ -1355,7 +1433,7 @@ function refresh(){
   }).then(function(r){
     renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
     renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
-    renderPlus(); renderBeach();
+    renderCoins(); renderPlus(); renderBeach();
     var now = new Date();
     $("stampTime").textContent = dateStr(now)+" "+timeStr(now);
     $("stampSrc").textContent = r.n===0
@@ -1379,6 +1457,8 @@ function renderDataStatus(){
     '시세는 10분, 암호화폐는 5분 단위로 갱신됩니다.</p>'+
     '<p class="note">세계 지수 · 국내외 종목 · 국채 수익률 곡선도 같은 중계 서버를 거쳐 10분 단위로 갱신됩니다. '+
     '경제 헤드라인은 <b>구글 뉴스</b> 검색 결과를 15분 단위로, 김치 프리미엄은 <b>업비트</b> 원화 시세를 3분 단위로 받아옵니다.</p>'+
+    '<p class="note">지수 · 암호화폐 · 원자재 · 세계 지수 · 종목 카드를 <b>누르면 최근 1년 차트</b>가 뜹니다(1개월 · 3개월 · 6개월 · 1년 전환). '+
+    '차트 데이터는 중계 서버가 6시간마다 갱신합니다.</p>'+
     '<p class="note">맨 위 <b>오보해변</b> 띠(파고 · 바람 · 수온 · 기온)는 <b>Open-Meteo</b> 예보 모델값입니다. 브라우저가 직접 받아오고, 막히면 중계 서버로 한 번 더 시도합니다. 인근 해상 격자 기준이라 실제 해변과는 차이가 있을 수 있습니다.</p>'+
     '<p class="note">환율은 유럽중앙은행 고시(frankfurter), 투자심리 지수는 alternative.me에서 브라우저가 직접 받아옵니다. '+
     '중계 서버가 응답하지 않으면 내장 참고값('+SNAP_DATE+' 기준)으로 표시되며, 값마다 배지로 구분됩니다.</p>'+
@@ -2095,6 +2175,12 @@ function worldCard(o){
     (has
       ? '<div class="chg '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,2)+' ('+pct(p)+') '+(d>0?"상승":(d<0?"하락":"보합"))+'</div>'
       : '<div class="chg flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div>');
+  c.setAttribute("data-ck", o.key);
+  c.setAttribute("data-cn", o.name);
+  c.setAttribute("data-cs", o.sub+" 증시 · 최근 1년");
+  c.setAttribute("data-cf", "num");
+  c.setAttribute("role", "button");
+  c.setAttribute("tabindex", "0");
   return c;
 }
 function renderWorld(){
@@ -2130,6 +2216,12 @@ function stockTable(tbodyId, list, krw){
       '<td class="'+dirCls(d)+'">'+(has ? fd(d) : "—")+'</td>'+
       '<td class="'+dirCls(d)+'"><b>'+(has ? pct(p) : "—")+'</b></td>'+
       '<td style="text-align:left;color:var(--sub)">'+o.note+'</td>';
+    tr.setAttribute("data-ck", o.key);
+    tr.setAttribute("data-cn", o.name);
+    tr.setAttribute("data-cs", o.t+" · 최근 1년");
+    tr.setAttribute("data-cf", krw ? "krw" : "usd");
+    tr.setAttribute("role", "button");
+    tr.setAttribute("tabindex", "0");
     tb.appendChild(tr);
   });
 }
@@ -2436,6 +2528,176 @@ function loadBeach(){
 }
 
 /* =======================================================================
+   9-d. 카드 클릭 → 개별 차트 (최근 1년 일봉, 중계 ?only=chart)
+   ======================================================================= */
+var CHART_CACHE = {};
+
+/* 클릭 가능한 요소에 붙이는 속성 — 위임 처리라 요소마다 이벤트를 달지 않는다 */
+function chartAttr(key, name, sub, fmt){
+  if(!key) return "";
+  return ' data-ck="'+esc(key)+'" data-cn="'+esc(name||key)+'" data-cs="'+esc(sub||"")+
+         '" data-cf="'+(fmt||"num")+'" role="button" tabindex="0" aria-label="'+esc(name||key)+' 차트 보기"';
+}
+function fmtVal(v, fmt){
+  if(!isFinite(v)) return "—";
+  if(fmt==="krw") return nf(v,0)+"원";
+  if(fmt==="usd") return "$"+nf(v, v>=1000 ? 0 : (v>=1 ? 2 : 4));
+  if(fmt==="pct") return nf(v,3)+"%";
+  return nf(v, v>=1000 ? 2 : 2);
+}
+function chartFmtY(fmt){
+  return function(v){
+    if(fmt==="krw") return v>=10000 ? nf(v/10000,0)+"만" : nf(v,0);
+    if(fmt==="usd") return v>=10000 ? "$"+nf(v/1000,0)+"k" : "$"+nf(v, v>=100 ? 0 : 2);
+    if(fmt==="pct") return nf(v,2)+"%";
+    return v>=10000 ? nf(v/1000,0)+"k" : nf(v,0);
+  };
+}
+
+function openChart(key, name, sub, fmt){
+  if(!key) return;
+  var m = $("chartModal");
+  STATE.chart = {key:key, name:name, sub:sub, fmt:fmt||"num", range:6, data:null};
+  $("cmTitle").textContent = name || key;
+  $("cmSub").textContent = sub || "";
+  $("cmStats").innerHTML = "";
+  $("cmChart").innerHTML = '<p class="note" style="padding:70px 0;text-align:center">차트를 불러오는 중…</p>';
+  m.hidden = false;
+  document.body.style.overflow = "hidden";
+  try{ $("cmClose").focus(); }catch(e){}
+
+  if(CHART_CACHE[key]){ STATE.chart.data = CHART_CACHE[key]; drawChart(); return; }
+  if(!PROXY || PROXY.indexOf("http")!==0){
+    $("cmChart").innerHTML = '<p class="note" style="padding:60px 0;text-align:center">중계 서버가 설정되지 않아 차트를 볼 수 없습니다.</p>';
+    return;
+  }
+  grab(PROXY+"?v=2&only=chart&k="+encodeURIComponent(key), 20000).then(function(j){
+    var c = j && j.chart;
+    if(!c || !c.ok || !c.close || c.close.length < 5){
+      if(STATE.chart && STATE.chart.key===key){
+        $("cmChart").innerHTML = '<p class="note" style="padding:60px 0;text-align:center">'+
+          '차트를 불러오지 못했습니다. 잠시 뒤 다시 시도해 보세요.</p>';
+      }
+      return;
+    }
+    CHART_CACHE[key] = c;
+    if(STATE.chart && STATE.chart.key===key){ STATE.chart.data = c; drawChart(); }
+  });
+}
+function closeChart(){
+  var m = $("chartModal");
+  if(!m || m.hidden) return;
+  m.hidden = true;
+  STATE.chart = null;
+  document.body.style.overflow = "";
+}
+
+function drawChart(){
+  var st = STATE.chart;
+  if(!st || !st.data) return;
+  var d = st.data;
+  /* 최근 1년치를 받아 두고 버튼으로 잘라 본다 (개월 × 21영업일) */
+  var n = d.close.length;
+  var take = st.range >= 12 ? n : Math.min(n, Math.round(st.range * 21));
+  var close = d.close.slice(n - take);
+  var labels = d.labels.slice(n - take);
+
+  $("cmChart").innerHTML = lineChart({
+    host:"cmChart", height:300, labels:labels,
+    series:[{data:close, color:"#16161a", fill:true}],
+    fmtY: chartFmtY(st.fmt)
+  });
+
+  var first = close[0], last = close[close.length-1];
+  var ret = first ? (last-first)/first*100 : 0;
+  var hi = Math.max.apply(null, close), lo = Math.min.apply(null, close);
+  var mdd = maxDrawdown_(close);
+  var prevRow = "";
+  if(d.prev != null && isFinite(d.prev) && d.prev > 0){
+    var dd = d.last - d.prev, pp = dd/d.prev*100;
+    prevRow = '<div class="rowline"><span>전일 대비</span><b class="'+dirCls(dd)+'">'+
+      (dd>0?"+":"")+fmtVal(Math.abs(dd)*(dd<0?-1:1), st.fmt)+' ('+pct(pp)+')</b></div>';
+  }
+  $("cmStats").innerHTML =
+    '<div class="rowline"><span>현재가</span><b style="font-size:19px">'+fmtVal(d.last, st.fmt)+'</b></div>'+
+    prevRow+
+    '<div class="rowline"><span>기간 수익률</span><b class="'+dirCls(ret)+'">'+pct(ret)+'</b></div>'+
+    '<div class="rowline"><span>기간 최고 / 최저</span><b>'+fmtVal(hi, st.fmt)+' / '+fmtVal(lo, st.fmt)+'</b></div>'+
+    '<div class="rowline"><span>기간 최대 낙폭</span><b class="down">'+nf(mdd,1)+'%</b></div>';
+}
+
+function bindChartModal(){
+  /* 카드·표 어디를 눌러도 되도록 문서에 한 번만 건다 */
+  document.addEventListener("click", function(e){
+    if(!e.target || !e.target.closest) return;
+    var t = e.target.closest("[data-ck]");
+    if(!t) return;
+    if(e.target.closest("a")) return;   /* 링크는 링크대로 */
+    openChart(t.getAttribute("data-ck"), t.getAttribute("data-cn"),
+              t.getAttribute("data-cs"), t.getAttribute("data-cf"));
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){ closeChart(); return; }
+    if(e.key !== "Enter" && e.key !== " ") return;
+    if(!e.target || !e.target.closest) return;
+    var t = e.target.closest("[data-ck]");
+    if(!t) return;
+    e.preventDefault();
+    openChart(t.getAttribute("data-ck"), t.getAttribute("data-cn"),
+              t.getAttribute("data-cs"), t.getAttribute("data-cf"));
+  });
+  $("cmClose").onclick = closeChart;
+  $("chartBg").onclick = closeChart;
+  bindSeg("cmRange", function(b){
+    if(!STATE.chart) return;
+    STATE.chart.range = parseInt(b.getAttribute("data-r"), 10);
+    drawChart();
+  });
+}
+
+/* =======================================================================
+   9-e. 암호화폐 카드 (지수와 같은 크기로 위쪽에 둔다)
+   ======================================================================= */
+function coinCard(o){
+  var c = el("div","card quote");
+  var dg = o.last>=1000 ? 0 : (o.last>=1 ? 2 : 4);
+  var usdkrw = null;
+  STATE.fx.forEach(function(x){ if(x.key==="USDKRW" && isFinite(x.last)) usdkrw = x.last; });
+  var has = (o.prev!=null && isFinite(o.prev) && o.prev>0);
+  var d = has ? o.last-o.prev : 0, p = has ? d/o.prev*100 : 0;
+  var krwLine = "";
+  if(usdkrw && isFinite(o.last)){
+    var w = o.last * usdkrw;
+    krwLine = '<div class="t5" style="margin-top:9px;padding-top:8px;border-top:1px dashed #e2e2db;font-size:12px;color:var(--sub);font-weight:600">'+
+      '원화 환산 <b style="color:var(--ink);font-weight:800">'+
+      (w>=100000000 ? nf(w/100000000,2)+"억원" : nf(w,0)+"원")+'</b></div>';
+  }
+  c.innerHTML =
+    '<div class="nm"><b>'+o.name+'</b><span>'+(o.live?'<span class="badge live" style="margin-right:6px">실시간</span>':'')+o.tag+'</span></div>'+
+    '<div class="val">$'+nf(o.last,dg)+'</div>'+
+    '<div class="prev">'+(has ? '전일 $'+nf(o.prev,dg) : '&nbsp;')+'</div>'+
+    (has
+      ? '<div class="chg '+dirCls(d)+'">'+(d>0?"+":"")+nf(d,dg)+' ('+pct(p)+') '+(d>0?"상승":(d<0?"하락":"보합"))+'</div>'
+      : '<div class="chg flat" style="color:var(--dim);font-weight:600">전일 대비 정보 없음</div>')+
+    krwLine;
+  c.setAttribute("data-ck", o.key);
+  c.setAttribute("data-cn", o.name);
+  c.setAttribute("data-cs", o.tag + " · 최근 1년");
+  c.setAttribute("data-cf", "usd");
+  c.setAttribute("role", "button");
+  c.setAttribute("tabindex", "0");
+  return c;
+}
+function renderCoins(){
+  var g = $("coinGrid");
+  if(!g) return;
+  g.innerHTML = "";
+  STATE.coins.forEach(function(o){ g.appendChild(coinCard(o)); });
+  var live = STATE.coins.some(function(o){ return o.live; });
+  $("coinAsOf").textContent = live ? "실시간 · 달러 기준" : "참고값 · "+SNAP_DATE+" 기준";
+}
+
+/* =======================================================================
    10. 이벤트 · 초기화
    ======================================================================= */
 function bindTabs(){
@@ -2478,9 +2740,10 @@ function bindNumberInput(id, cb, comma){
 
 function init(){
   bindTabs();
+  bindChartModal();
   renderIndices(); renderFx(); renderAssets(); renderFng(); renderPolicy(); renderFlow(); renderDataStatus();
   renderEtfChips(); renderEtfChart(); renderEtfCards(); renderEtfTable();
-  renderPlus(); renderBeach();
+  renderCoins(); renderPlus(); renderBeach();
   renderLearn();
   bindSeg("txMode", function(b){ txMode = b.dataset.m; renderTxForm(); });
   renderTxForm();
@@ -2529,7 +2792,7 @@ function init(){
 
   window.addEventListener("resize", function(){
     clearTimeout(window.__rz);
-    window.__rz = setTimeout(function(){ renderFlow(); renderEtfChart(); renderCurve(); calcLoan(); calcCompound(); renderTax(); }, 250);
+    window.__rz = setTimeout(function(){ renderFlow(); renderEtfChart(); renderCurve(); drawChart(); calcLoan(); calcCompound(); renderTax(); }, 250);
   });
 }
 
